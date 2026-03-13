@@ -94,3 +94,41 @@
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+/* ===== DARK MODE ===== */
+.dark body { @apply bg-gray-950 text-gray-100; }
+.dark .card { @apply bg-gray-900 border-gray-800; }
+.dark .input-field { @apply bg-gray-800 border-gray-700 text-gray-100 placeholder-gray-500; }
+.dark .input-field:focus { @apply border-primary-500 ring-primary-900; }
+.dark .nav-item { @apply text-gray-400 hover:bg-gray-800 hover:text-gray-100; }
+.dark .nav-item.active { @apply bg-primary-900/50 text-primary-400; }
+.dark .btn-secondary { @apply bg-gray-800 border-gray-700 text-gray-200 hover:bg-gray-700; }
+.dark .badge-gray { @apply bg-gray-800 text-gray-300; }
+
+/* ===== ONBOARDING PROGRESS ===== */
+.onboarding-step { @apply flex items-center gap-3 p-4 rounded-xl border-2 transition-all; }
+.onboarding-step.done { @apply border-green-200 bg-green-50; }
+.onboarding-step.active { @apply border-primary-300 bg-primary-50; }
+.onboarding-step.pending { @apply border-gray-100 bg-gray-50; }
+
+/* ===== PULSE LIVE ===== */
+.live-dot { @apply inline-block w-2 h-2 rounded-full bg-green-500; animation: livePulse 2s ease-in-out infinite; }
+@keyframes livePulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+/* ===== REFERRAL ===== */
+.referral-card { @apply bg-gradient-to-br from-violet-600 to-indigo-700 rounded-2xl p-6 text-white; }
+
+/* ─── New badge variants ─── */
+.badge-green  { @apply bg-green-100 text-green-700; }
+.badge-orange { @apply bg-orange-100 text-orange-700; }
+.badge-red    { @apply bg-red-100 text-red-700; }
+.badge-gray   { @apply bg-gray-100 text-gray-600; }
+.badge-blue   { @apply bg-blue-100 text-blue-700; }
+
+/* ─── Line clamp ─── */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

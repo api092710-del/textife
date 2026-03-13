@@ -23,7 +23,6 @@
     "prisma": "^5.14.0",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",
-    "openai": "^4.47.1",
     "framer-motion": "^11.2.10",
     "recharts": "^2.12.7",
     "lucide-react": "^0.383.0",
