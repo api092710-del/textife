@@ -41,11 +41,11 @@ export default function TemplatesPage() {
     (t.title.toLowerCase().includes(search.toLowerCase()) || t.content.toLowerCase().includes(search.toLowerCase()))
   )
 
-  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-8 h-8" /></div>
+  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-10 h-10 border-indigo-600" /></div>
 
   return (
     <DashboardLayout user={user} onLogout={logout}>
-      <div className="max-w-5xl space-y-5">
+      <div className="max-w-5xl space-y-5 page-enter">
         <div className="flex items-center justify-between">
           <div><h1 className="font-display font-bold text-2xl text-gray-900">Templates</h1><p className="text-sm text-gray-500 mt-0.5">Ready-to-use message templates for your bots</p></div>
           <button onClick={() => setModal(true)} className="btn-primary text-sm"><Plus className="w-4 h-4" />New Template</button>

@@ -22,7 +22,7 @@ export default function ReferralPage() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-8 h-8" /></div>
+  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-10 h-10 border-indigo-600" /></div>
 
   return (
     <DashboardLayout user={user} onLogout={logout}>

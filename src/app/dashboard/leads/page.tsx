@@ -28,7 +28,7 @@ export default function LeadsPage() {
     toast.success('Leads exported!')
   }
 
-  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-8 h-8" /></div>
+  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-10 h-10 border-indigo-600" /></div>
 
   const leads = data?.leads ?? []
   const filtered = leads.filter((l: any) =>
@@ -38,7 +38,7 @@ export default function LeadsPage() {
 
   return (
     <DashboardLayout user={user} onLogout={logout}>
-      <div className="max-w-5xl space-y-5">
+      <div className="max-w-5xl space-y-5 page-enter">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="font-display font-bold text-2xl text-gray-900">Leads</h1>

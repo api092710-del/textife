@@ -43,11 +43,11 @@ export default function QuickToolsPage() {
 
   const copy = () => { navigator.clipboard.writeText(result); setCopied(true); toast.success('Copied!'); setTimeout(() => setCopied(false), 2000) }
   const selectedTool = TOOLS.find(t => t.id === tool)!
-  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-8 h-8" /></div>
+  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-10 h-10 border-indigo-600" /></div>
 
   return (
     <DashboardLayout user={user} onLogout={logout}>
-      <div className="max-w-4xl space-y-5">
+      <div className="max-w-4xl space-y-5 page-enter">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3">
           <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center"><Zap className="w-5 h-5 text-amber-500" /></div>
           <div>

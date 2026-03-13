@@ -37,7 +37,7 @@ export default function OnboardingPage() {
     setCompleted(c => c.includes(id) ? c.filter(x => x !== id) : [...c, id])
   }
 
-  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-8 h-8" /></div>
+  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-10 h-10 border-indigo-600" /></div>
 
   const pct = Math.round((completed.length / STEPS.length) * 100)
 

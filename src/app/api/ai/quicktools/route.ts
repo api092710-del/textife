@@ -3,23 +3,22 @@ import { requireAuth } from '@/lib/auth'
 import { ok, err } from '@/lib/response'
 import { callAI } from '@/lib/ai'
 
+const TOOL_PROMPTS: Record<string, string> = {
+  summarize: 'Create a sharp, insightful summary of the following text. Use clear bullet points for key takeaways and end with one powerful "Bottom Line" sentence. Be concise but capture every important insight:\n\n',
+  ideas: 'Generate 10 creative, actionable, and unique ideas about the following topic. For each idea: give it an exciting name, explain it in 1 sentence, and add one "why this works" insight. Be bold and original — avoid generic suggestions:\n\n',
+  rewrite: 'Rewrite the following text to be more compelling, clear, and persuasive while keeping the same meaning. Improve the flow, word choice, and impact. Show the rewrite only, no explanation:\n\n',
+  translate: 'Translate the following text accurately and naturally. Preserve the tone and style. If no target language is specified, translate to English:\n\n',
+  expand: 'Expand the following text into a more detailed, thorough version with rich examples, context, and insights. Keep it well-structured:\n\n',
+  tone: 'Rewrite the following text in a professional, polished tone suitable for business communication. Keep the core message but elevate the language:\n\n',
+}
+
 export async function POST(req: NextRequest) {
   try {
     requireAuth(req)
-    const { tool, input, options = {} } = await req.json()
-
-    const prompts: Record<string, string> = {
-      summarize: `Summarize the following text in 3-5 bullet points. Make each point concise and impactful:\n\n${input}`,
-      rewrite: `Rewrite the following content to be more ${options.style || 'professional'} and engaging. Improve clarity and flow:\n\n${input}`,
-      ideas: `Generate 8 creative ideas related to: "${input}". Make each idea specific, actionable, and unique. Number them clearly.`,
-      translate: `Translate the following text to ${options.language || 'Arabic'}. Maintain the tone and formatting:\n\n${input}`,
-      explain: `Explain the following concept in simple terms (as if explaining to a 10-year-old), then provide a more detailed explanation for professionals:\n\n${input}`,
-      actionplan: `Create a detailed action plan for: "${input}". Include: Goal statement, 5 phases with specific tasks, timeline estimate, resources needed, success metrics. Make it immediately actionable.`,
-      hashtags: `Generate 30 relevant hashtags for: "${input}". Mix: 10 high-volume (1M+), 10 medium (100k-1M), 10 niche (<100k). Group them by category.`,
-      headline: `Generate 10 attention-grabbing headlines/titles for: "${input}". Mix different styles: curiosity, numbers, how-to, benefit-driven, controversy. Make each one click-worthy.`,
-    }
-
-    const result = await callAI(prompts[tool] || `Help with: ${input}`)
+    const { tool, input } = await req.json()
+    if (!tool || !input) return err('Tool and input required')
+    const promptPrefix = TOOL_PROMPTS[tool] || 'Process the following text helpfully and insightfully:\n\n'
+    const result = await callAI(promptPrefix + input)
     return ok({ result })
   } catch (e: any) { return err(e.message) }
 }

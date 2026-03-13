@@ -46,11 +46,11 @@ export default function ContentPage() {
     a.click(); toast.success('Downloaded!')
   }
 
-  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-8 h-8" /></div>
+  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-10 h-10 border-indigo-600" /></div>
 
   return (
     <DashboardLayout user={user} onLogout={logout}>
-      <div className="max-w-4xl space-y-5">
+      <div className="max-w-4xl space-y-5 page-enter">
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-3">
           <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center"><PenTool className="w-5 h-5 text-purple-600" /></div>
           <div>

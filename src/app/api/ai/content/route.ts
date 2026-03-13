@@ -6,17 +6,23 @@ import { callAI } from '@/lib/ai'
 export async function POST(req: NextRequest) {
   try {
     requireAuth(req)
-    const { type, topic, tone = 'professional', audience = 'general', keywords = '' } = await req.json()
-
-    const prompts: Record<string, string> = {
-      blog: `Write a complete blog post about "${topic}". Tone: ${tone}. Target audience: ${audience}. Include: catchy title, intro paragraph, 3-4 main sections with headers, conclusion with CTA. Keywords to include: ${keywords}. Make it engaging and SEO-friendly. About 500 words.`,
-      marketing: `Write compelling marketing copy for "${topic}". Tone: ${tone}. Audience: ${audience}. Include: headline, subheadline, 3 benefit bullets, social proof placeholder, call to action. Make it persuasive and conversion-focused.`,
-      product: `Write a persuasive product description for "${topic}". Include: compelling headline, key features (3-5 bullets), benefits, who it's for, call to action. Tone: ${tone}. Make it SEO-friendly with keywords: ${keywords}.`,
-      social: `Generate 5 social media captions for "${topic}". Platform-optimized. Tone: ${tone}. Include: Instagram caption with hashtags, Twitter/X post, LinkedIn post, Facebook post, TikTok hook. Make them engaging and shareable.`,
-      email: `Write a complete email marketing campaign for "${topic}". Include: subject line (3 options), preview text, greeting, body (personalized, value-driven), CTA button text, PS line. Tone: ${tone}. Audience: ${audience}.`,
+    const { type, topic, tone, audience } = await req.json()
+    const typeGuide: Record<string, string> = {
+      'social-post': 'Write 3 variations of a social media post. Each should be scroll-stopping, include emojis strategically, and end with a call-to-action. Provide versions for LinkedIn, Instagram, and Twitter/X.',
+      'blog-intro': 'Write a compelling blog post introduction (200-300 words) that hooks the reader immediately, establishes credibility, and creates curiosity to read more. Use a pattern-interrupt opening.',
+      'email': 'Write a full marketing email with: subject line (5 options), preview text, personalized opening, value-packed body, social proof element, and a clear CTA. Make it feel human.',
+      'ad-copy': 'Write 5 ad copy variations: 2 Facebook/Instagram ads, 2 Google search ads, and 1 headline + subheadline combo. Focus on benefits over features and include specific numbers.',
+      'caption': 'Write 5 engaging social media captions with relevant hashtags. Each caption should tell a mini-story, provide value, or spark conversation. Include emojis naturally.',
     }
+    const guide = typeGuide[type] || 'Create compelling, original content that provides real value:'
+    const prompt = `You are a world-class copywriter and content strategist. ${guide}
 
-    const content = await callAI(prompts[type] || prompts.blog)
-    return ok({ content })
+Topic/Product: ${topic || 'general'}
+Tone: ${tone || 'engaging and conversational'}
+Target Audience: ${audience || 'general audience'}
+
+Make the content unique, memorable, and conversion-focused. Avoid clichés.`
+    const result = await callAI(prompt)
+    return ok({ result })
   } catch (e: any) { return err(e.message) }
 }

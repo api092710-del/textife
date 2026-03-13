@@ -79,7 +79,7 @@ export default function ChatPage() {
 
   const reset = () => { setMessages([{ id: '0', role: 'assistant', content: "New conversation started! How can I help you today? 🚀", ts: new Date() }]); setSessionId(null) }
 
-  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-8 h-8" /></div>
+  if (loading || !user) return <div className="min-h-screen flex items-center justify-center"><div className="spinner w-10 h-10 border-indigo-600" /></div>
 
   return (
     <DashboardLayout user={user} onLogout={logout}>

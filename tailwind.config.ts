@@ -1,35 +1,43 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
   darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: {
-          50: '#EFF6FF', 100: '#DBEAFE', 200: '#BFDBFE',
-          300: '#93C5FD', 400: '#60A5FA', 500: '#3B82F6',
-          600: '#2563EB', 700: '#1D4ED8', 800: '#1E40AF', 900: '#1E3A8A',
+          50:  '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe',
+          300: '#a5b4fc', 400: '#818cf8', 500: '#6366f1',
+          600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81',
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+        sans:    ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        card: '0 1px 3px rgba(0,0,0,0.04), 0 10px 30px rgba(0,0,0,0.05)',
-        button: '0 4px 14px rgba(37,99,235,0.35)',
-        glass: '0 8px 32px rgba(31,38,135,0.08)',
+        card:   '0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.06)',
+        button: '0 4px 14px rgba(79,70,229,0.35)',
+        lg:     '0 10px 30px rgba(0,0,0,0.1)',
+        xl:     '0 20px 50px rgba(0,0,0,0.12)',
+      },
+      borderRadius: {
+        '2xl': '1rem', '3xl': '1.5rem',
       },
       animation: {
-        float: 'float 6s ease-in-out infinite',
-        'fade-in': 'fadeIn 0.4s ease-out',
-        'slide-up': 'slideUp 0.4s ease-out',
+        'fade-in':    'fadeIn 0.3s ease-out',
+        'slide-up':   'slideUp 0.4s ease-out',
+        'bounce-sm':  'bounceSm 1s infinite',
       },
       keyframes: {
-        float: { '0%,100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-16px)' } },
-        fadeIn: { from: { opacity: '0' }, to: { opacity: '1' } },
-        slideUp: { from: { opacity: '0', transform: 'translateY(20px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        fadeIn:   { from: { opacity: '0' }, to: { opacity: '1' } },
+        slideUp:  { from: { opacity: '0', transform: 'translateY(10px)' }, to: { opacity: '1', transform: 'translateY(0)' } },
+        bounceSm: { '0%,100%': { transform: 'translateY(-3px)' }, '50%': { transform: 'translateY(0)' } },
       },
     },
   },
