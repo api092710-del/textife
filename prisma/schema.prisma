@@ -1,87 +1,85 @@
 // prisma/schema.prisma
 // Database: PostgreSQL (Supabase)
-// Get your DATABASE_URL from: supabase.com → Project → Settings → Database → Connection String (URI mode)
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")  // Required for Supabase connection pooling
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id                  String    @id @default(cuid())
-  fullName            String
-  username            String    @unique
-  email               String    @unique
-  dateOfBirth         String?
-  password            String
-  role                String    @default("USER")   // USER | ADMIN
-  plan                String    @default("FREE")   // FREE | PRO | BUSINESS
-  isEmailVerified     Boolean   @default(true)
-  isActive            Boolean   @default(true)
-  isBanned            Boolean   @default(false)
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id              String   @id @default(cuid())
+  fullName        String
+  username        String   @unique
+  email           String   @unique
+  dateOfBirth     String?
+  password        String
+  role            String   @default("USER")
+  plan            String   @default("FREE")
+  isEmailVerified Boolean  @default(true)
+  isActive        Boolean  @default(true)
+  isBanned        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  subscriptions       Subscription[]
-  chatSessions        ChatSession[]
-  botInstances        BotInstance[]
-  payments            Payment[]
-  analytics           Analytics[]
+  subscriptions Subscription[]
+  chatSessions  ChatSession[]
+  botInstances  BotInstance[]
+  payments      Payment[]
+  analytics     Analytics[]
 
   @@map("users")
 }
 
 model Subscription {
-  id          String   @id @default(cuid())
-  userId      String
-  plan        String
-  status      String   @default("ACTIVE")    // ACTIVE | CANCELLED | EXPIRED
-  provider    String                          // PAYPAL | NOWPAYMENTS
-  externalId  String?
-  amount      Float
-  currency    String   @default("USD")
-  startDate   DateTime @default(now())
-  endDate     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  userId     String
+  plan       String
+  status     String   @default("ACTIVE")
+  provider   String
+  externalId String?
+  amount     Float
+  currency   String   @default("USD")
+  startDate  DateTime @default(now())
+  endDate    DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("subscriptions")
 }
 
 model Payment {
-  id          String   @id @default(cuid())
-  userId      String
-  provider    String                         // PAYPAL | NOWPAYMENTS
-  externalId  String?
-  amount      Float
-  currency    String   @default("USD")
-  status      String   @default("PENDING")  // PENDING | COMPLETED | FAILED
-  plan        String
-  metadata    String?  // JSON string
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  userId     String
+  provider   String
+  externalId String?
+  amount     Float
+  currency   String   @default("USD")
+  status     String   @default("PENDING")
+  plan       String
+  metadata   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("payments")
 }
 
 model ChatSession {
-  id        String        @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
   title     String?
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages  ChatMessage[]
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages ChatMessage[]
 
   @@map("chat_sessions")
 }
@@ -89,12 +87,12 @@ model ChatSession {
 model ChatMessage {
   id        String   @id @default(cuid())
   sessionId String
-  role      String   // user | assistant
+  role      String
   content   String
   tokens    Int?
   createdAt DateTime @default(now())
 
-  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@map("chat_messages")
 }
@@ -104,14 +102,14 @@ model BotInstance {
   userId        String
   name          String
   phoneNumber   String?
-  status        String   @default("INACTIVE")  // ACTIVE | INACTIVE | ERROR
-  config        String?  // JSON string
+  status        String   @default("INACTIVE")
+  config        String?
   totalReplies  Int      @default(0)
   leadsCaptures Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("bot_instances")
 }
@@ -125,21 +123,21 @@ model Analytics {
   revenueEst      Float    @default(0)
   apiCalls        Int      @default(0)
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("analytics")
 }
 
 model ScamSignal {
   id          String   @id @default(cuid())
-  source      String                          // openphish | phishtank | abusech | manual
+  source      String
   title       String
   description String?
   url         String?
-  platform    String?                         // WhatsApp | Instagram | Email | SMS | etc
+  platform    String?
   region      String   @default("Global")
-  rawData     String?                         // JSON string of raw feed data
-  hash        String?  @unique               // dedup hash of url/title
+  rawData     String?
+  hash        String?  @unique
   createdAt   DateTime @default(now())
 
   @@map("scam_signals")
@@ -149,8 +147,8 @@ model ScamSignal {
 
 model SecurityAlert {
   id          String   @id @default(cuid())
-  date        String                          // YYYY-MM-DD key for daily cache
-  alerts      String                          // JSON array of alert objects
+  date        String
+  alerts      String
   tip         String?
   signalCount Int      @default(0)
   createdAt   DateTime @default(now())
