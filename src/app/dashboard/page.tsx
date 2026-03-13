@@ -19,6 +19,7 @@ const AI_TOOLS = [
   { icon: '📚', label: 'Prompt Library',  desc: '24 fill-in AI prompts',           href: '/dashboard/prompts',       bg: 'bg-indigo-50',   border: 'border-indigo-100', iconBg: 'bg-indigo-100', free: false },
   { icon: '🤖', label: 'WhatsApp Bots',   desc: 'AI customer automation',          href: '/dashboard/bots',          bg: 'bg-teal-50',     border: 'border-teal-100',   iconBg: 'bg-teal-100',   free: false },
   { icon: '🎙️', label: 'Voice Changer',   desc: 'Baby, hero & cartoon voices',     href: '/dashboard/voicechanger',  bg: 'bg-pink-50',     border: 'border-pink-100',   iconBg: 'bg-pink-100',   free: true  },
+  { icon: '🚨', label: 'Scam Alerts',     desc: 'Daily scam & hack alerts',        href: '/dashboard/news',          bg: 'bg-red-50',      border: 'border-red-100',    iconBg: 'bg-red-100',    free: true  },
 ]
 
 const QUICK_TOOLS = [

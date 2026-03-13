@@ -23,6 +23,7 @@ const NAV_GROUPS = [
       { label: 'Quick Tools',     href: '/dashboard/quicktools',  emoji: '⚡' },
       { label: 'Prompt Library',  href: '/dashboard/prompts',     emoji: '📚' },
       { label: 'Voice Changer',   href: '/dashboard/voicechanger', emoji: '🎙️' },
+      { label: 'Scam Alerts',     href: '/dashboard/news',         emoji: '🚨' },
     ]
   },
   {
@@ -48,11 +49,11 @@ const NAV_GROUPS = [
 ]
 
 const BOTTOM_NAV = [
-  { label: 'Home',     href: '/dashboard',            emoji: '🏠' },
-  { label: 'Tools',    href: '/dashboard/quicktools', emoji: '⚡' },
-  { label: 'Bots',     href: '/dashboard/bots',       emoji: '🤖' },
-  { label: 'Prompts',  href: '/dashboard/prompts',    emoji: '📚' },
-  { label: 'Account',  href: '/dashboard/settings',   emoji: '⚙️' },
+  { label: 'Home',    href: '/dashboard',            emoji: '🏠' },
+  { label: 'Tools',   href: '/dashboard/quicktools', emoji: '⚡' },
+  { label: 'Alerts',  href: '/dashboard/news',       emoji: '🚨' },
+  { label: 'Bots',    href: '/dashboard/bots',       emoji: '🤖' },
+  { label: 'Account', href: '/dashboard/settings',   emoji: '⚙️' },
 ]
 
 export default function DashboardLayout({
