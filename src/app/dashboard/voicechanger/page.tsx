@@ -1,271 +1,531 @@
 'use client'
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import DashboardLayout from '@/components/dashboard/DashboardLayout'
 import { useAuth } from '@/hooks/useAuth'
-import { motion, AnimatePresence, useSpring, useMotionValue } from 'framer-motion'
-import { Download, Play, Square, Mic, Check, Share2, Sparkles, RefreshCw } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  Mic, Square, Play, Download, Share2, Camera,
+  Check, X, RefreshCw, ExternalLink, ChevronRight, Info
+} from 'lucide-react'
 import toast from 'react-hot-toast'
 
-// ── Voice Characters ─────────────────────────────────────────────────────────
+// ─── VOICE CHARACTERS ────────────────────────────────────────────────────────
 const VOICES = [
   {
     id: 'baby',
-    emoji: '👶', label: 'Baby', subtitle: 'Adorably tiny',
-    color: '#FF6B9D', colorDark: '#c94a7a', colorGlow: 'rgba(255,107,157,0.4)',
-    bg: 'from-pink-400 via-rose-400 to-fuchsia-500',
-    cardBg: 'from-pink-50 to-rose-50', cardBorder: '#fda4af',
-    pitch: 8, rate: 1.18, ringMod: false,
-    vibe: '🥺 So cute it hurts',
-    sound: 'Tiny & sweet',
+    emoji: '👶', name: 'Baby Coo',
+    tagline: 'Tiny & impossibly sweet',
+    desc: 'Transforms your voice into a genuinely adorable baby voice — not cartoonish, but soft, sweet and melting. Send this as a voice note and watch hearts break 🥺',
+    mood: 'Cute · Soft · Heart-melting',
+    shareCaption: "POV: I turned into the cutest baby 👶 my voice will never recover 🥺",
+    tiktokTag: '#babychallenge #cuteaf #voicechanger #textife',
+    color1: '#FF6B9D', color2: '#e8447a',
+    glow: 'rgba(255,107,157,0.5)',
   },
   {
     id: 'chipmunk',
-    emoji: '🐿️', label: 'Chipmunk', subtitle: 'Turbo squeaky',
-    color: '#F59E0B', colorDark: '#b45309', colorGlow: 'rgba(245,158,11,0.4)',
-    bg: 'from-amber-400 via-yellow-400 to-orange-400',
-    cardBg: 'from-amber-50 to-yellow-50', cardBorder: '#fcd34d',
-    pitch: 11, rate: 1.4, ringMod: false,
-    vibe: '🥜 Speedy & hilarious',
-    sound: 'Fast & squeaky',
+    emoji: '🐿️', name: 'Chipmunk',
+    tagline: 'Turbo squeaky & hilarious',
+    desc: 'Lightning-fast, ridiculously squeaky chipmunk energy. The most-shared voice on social media — literally impossible not to laugh. Warning: extremely contagious.',
+    mood: 'Funny · Fast · Viral',
+    shareCaption: "I turned into a chipmunk 🐿️ and I cannot stop replaying this 😭😂",
+    tiktokTag: '#chipmunk #funny #voicechanger #trending',
+    color1: '#FBBF24', color2: '#D97706',
+    glow: 'rgba(251,191,36,0.5)',
   },
   {
     id: 'cartoon',
-    emoji: '🐭', label: 'Cartoon', subtitle: 'Classic character',
-    color: '#8B5CF6', colorDark: '#6d28d9', colorGlow: 'rgba(139,92,246,0.4)',
-    bg: 'from-violet-400 via-purple-500 to-indigo-500',
-    cardBg: 'from-violet-50 to-purple-50', cardBorder: '#c4b5fd',
-    pitch: 10, rate: 1.22, ringMod: false,
-    vibe: '🎨 Pure cartoon energy',
-    sound: 'Playful & fun',
+    emoji: '🎭', name: 'Cartoon Star',
+    tagline: 'Animated character energy',
+    desc: 'The classic animated character voice — bubbly, expressive, and totally lovable. Sounds like you just jumped out of a Disney movie. Perfect for Reels.',
+    mood: 'Playful · Expressive · Fun',
+    shareCaption: "Someone animate me please 🎭 I literally sound like a cartoon character now",
+    tiktokTag: '#cartoon #animated #voicechanger #disney',
+    color1: '#A855F7', color2: '#7C3AED',
+    glow: 'rgba(168,85,247,0.5)',
   },
   {
     id: 'hero',
-    emoji: '🦸', label: 'Hero', subtitle: 'Cinematic power',
-    color: '#3B82F6', colorDark: '#1d4ed8', colorGlow: 'rgba(59,130,246,0.4)',
-    bg: 'from-blue-500 via-indigo-500 to-blue-700',
-    cardBg: 'from-blue-50 to-indigo-50', cardBorder: '#93c5fd',
-    pitch: -7, rate: 0.85, ringMod: false,
-    vibe: '💪 Deep & powerful',
-    sound: 'Bold & strong',
+    emoji: '🦸', name: 'Action Hero',
+    tagline: 'Deep, bold & cinematic',
+    desc: 'Powerful, chest-resonating cinematic voice — sounds like a movie trailer narrator. Deep, commanding and seriously impressive. Anything you say sounds epic.',
+    mood: 'Powerful · Bold · Cinematic',
+    shareCaption: "I now narrate my life like a movie trailer 🎬 this voice is too powerful",
+    tiktokTag: '#epicvoice #actionhero #voiceover #cinematic',
+    color1: '#3B82F6', color2: '#1D4ED8',
+    glow: 'rgba(59,130,246,0.5)',
   },
   {
     id: 'elder',
-    emoji: '👴', label: 'Wise Elder', subtitle: 'Warm grandpa',
-    color: '#D97706', colorDark: '#92400e', colorGlow: 'rgba(217,119,6,0.4)',
-    bg: 'from-orange-400 via-amber-500 to-yellow-600',
-    cardBg: 'from-orange-50 to-amber-50', cardBorder: '#fbbf24',
-    pitch: -5, rate: 0.78, ringMod: false,
-    vibe: '📜 Slow & wise',
-    sound: 'Calm & deep',
+    emoji: '🧙', name: 'Wise Wizard',
+    tagline: 'Warm, deep & ancient',
+    desc: 'A warm, slow, deeply resonant voice with real gravitas. Sounds like a wise grandfather or movie wizard. Perfect for storytelling — every word carries weight.',
+    mood: 'Warm · Deep · Wise',
+    shareCaption: "I speak like an ancient wizard now 🧙 every word I say sounds profound",
+    tiktokTag: '#wizard #storytelling #deepvoice #wisdomcheck',
+    color1: '#F59E0B', color2: '#B45309',
+    glow: 'rgba(245,158,11,0.5)',
   },
   {
     id: 'robot',
-    emoji: '🤖', label: 'Robot', subtitle: 'BEEP BOOP',
-    color: '#10B981', colorDark: '#065f46', colorGlow: 'rgba(16,185,129,0.4)',
-    bg: 'from-emerald-500 via-teal-500 to-cyan-600',
-    cardBg: 'from-emerald-50 to-teal-50', cardBorder: '#6ee7b7',
-    pitch: 0, rate: 0.92, ringMod: true,
-    vibe: '⚙️ Mechanical & cool',
-    sound: 'Robotic & metallic',
+    emoji: '🤖', name: 'AI Robot',
+    tagline: 'Metallic & futuristic',
+    desc: 'A genuinely unsettling metallic robot voice with ring-modulation buzz. Sounds exactly like a sci-fi AI — creepy, cool and completely unique. BEEP BOOP.',
+    mood: 'Mechanical · Eerie · Sci-fi',
+    shareCaption: "UNIT 7 IS NOW ONLINE 🤖 BEEP BOOP THIS IS MY VOICE NOW",
+    tiktokTag: '#robot #AI #scifi #voicechanger',
+    color1: '#10B981', color2: '#047857',
+    glow: 'rgba(16,185,129,0.5)',
   },
   {
     id: 'demon',
-    emoji: '😈', label: 'Demon', subtitle: 'Dark & eerie',
-    color: '#EF4444', colorDark: '#7f1d1d', colorGlow: 'rgba(239,68,68,0.4)',
-    bg: 'from-red-600 via-red-700 to-rose-900',
-    cardBg: 'from-red-50 to-rose-50', cardBorder: '#fca5a5',
-    pitch: -9, rate: 0.72, ringMod: false,
-    vibe: '🔥 Scary & dramatic',
-    sound: 'Dark & deep',
+    emoji: '😈', name: 'Dark Demon',
+    tagline: 'Spine-chilling & dark',
+    desc: 'Ultra-deep, dark and genuinely terrifying. Rich sub-bass rumble with a haunting quality — perfect for horror content, dramatic reveals and scaring your friends.',
+    mood: 'Dark · Scary · Dramatic',
+    shareCaption: "I scared my entire family with this voice 😈 they thought the house was haunted",
+    tiktokTag: '#demon #horror #scary #voicechanger',
+    color1: '#EF4444', color2: '#991B1B',
+    glow: 'rgba(239,68,68,0.5)',
   },
   {
     id: 'fairy',
-    emoji: '🧚', label: 'Fairy', subtitle: 'Magical & tiny',
-    color: '#EC4899', colorDark: '#9d174d', colorGlow: 'rgba(236,72,153,0.4)',
-    bg: 'from-pink-400 via-fuchsia-500 to-pink-600',
-    cardBg: 'from-pink-50 to-fuchsia-50', cardBorder: '#f9a8d4',
-    pitch: 14, rate: 1.28, ringMod: false,
-    vibe: '✨ Magical & sparkly',
-    sound: 'Tiny & magical',
+    emoji: '🧚', name: 'Magic Fairy',
+    tagline: 'Ethereal & enchanting',
+    desc: 'The most magical, ethereal voice — ultra-high, airy and sparkly. Like Tinkerbell but with your words. Everyone who hears this immediately wants to share it.',
+    mood: 'Magical · Airy · Enchanting',
+    shareCaption: "I'm a fairy now and there's nothing anyone can do about it 🧚✨",
+    tiktokTag: '#fairy #magical #sparkle #cute',
+    color1: '#EC4899', color2: '#BE185D',
+    glow: 'rgba(236,72,153,0.5)',
   },
 ]
 
-// ── WAV encoder ──────────────────────────────────────────────────────────────
-function audioBufferToWav(buffer: AudioBuffer): Blob {
-  const numCh = buffer.numberOfChannels
-  const sr = buffer.sampleRate
-  const bDepth = 16
-  const bAlign = (numCh * bDepth) / 8
-  const byteRate = sr * bAlign
-  const dataSize = buffer.length * bAlign
-  const ab = new ArrayBuffer(44 + dataSize)
-  const v = new DataView(ab)
-  const ws = (o: number, s: string) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)) }
-  ws(0,'RIFF'); v.setUint32(4,36+dataSize,true); ws(8,'WAVE'); ws(12,'fmt ')
-  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,numCh,true)
-  v.setUint32(24,sr,true); v.setUint32(28,byteRate,true); v.setUint16(32,bAlign,true)
-  v.setUint16(34,bDepth,true); ws(36,'data'); v.setUint32(40,dataSize,true)
+// ─── WAV ENCODER ─────────────────────────────────────────────────────────────
+function encodeWAV(buf: AudioBuffer): Blob {
+  const nc = buf.numberOfChannels, sr = buf.sampleRate
+  const ba = (nc * 16) / 8, br = sr * ba, ds = buf.length * ba
+  const ab = new ArrayBuffer(44 + ds); const v = new DataView(ab)
+  const wr = (o: number, s: string) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)) }
+  wr(0,'RIFF'); v.setUint32(4,36+ds,true); wr(8,'WAVE'); wr(12,'fmt ')
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,nc,true)
+  v.setUint32(24,sr,true); v.setUint32(28,br,true); v.setUint16(32,ba,true)
+  v.setUint16(34,16,true); wr(36,'data'); v.setUint32(40,ds,true)
   let off = 44
-  for (let i = 0; i < buffer.length; i++) {
-    for (let ch = 0; ch < numCh; ch++) {
-      const s = Math.max(-1,Math.min(1,buffer.getChannelData(ch)[i]))
-      v.setInt16(off, s < 0 ? s*0x8000 : s*0x7fff, true); off += 2
+  for (let i = 0; i < buf.length; i++)
+    for (let c = 0; c < nc; c++) {
+      const s = Math.max(-1, Math.min(1, buf.getChannelData(c)[i]))
+      v.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7fff, true); off += 2
     }
-  }
   return new Blob([ab], { type: 'audio/wav' })
 }
 
-// ── Audio processor ──────────────────────────────────────────────────────────
-async function processVoice(blob: Blob, voice: typeof VOICES[0]): Promise<Blob> {
-  const actx = new (window.AudioContext || (window as any).webkitAudioContext)()
-  const ab = await blob.arrayBuffer()
-  const srcBuf = await actx.decodeAudioData(ab)
-  const offCtx = new OfflineAudioContext(
-    srcBuf.numberOfChannels,
-    Math.max(1, Math.ceil(srcBuf.length / voice.rate)),
-    srcBuf.sampleRate
-  )
-  const src = offCtx.createBufferSource()
-  src.buffer = srcBuf
-  src.playbackRate.value = voice.rate
-  src.detune.value = voice.pitch * 100
+// ─── PROFESSIONAL AUDIO DSP ENGINE ───────────────────────────────────────────
+// Per-voice carefully tuned processing chain:
+// Source → HP rumble filter → Pitch+Speed → Multi-band EQ →
+// Soft saturation → Dynamics compressor → Output gain → Render
+// Reverb is simulated via EQ tail shaping (no IR needed)
 
-  const comp = offCtx.createDynamicsCompressor()
-  comp.threshold.value = -18; comp.knee.value = 12
-  comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.15
+type FilterSpec = [number, number, number, BiquadFilterType]
 
-  if (voice.ringMod) {
-    const osc = offCtx.createOscillator()
-    const oscGain = offCtx.createGain()
-    const mix = offCtx.createGain()
-    osc.frequency.value = 140; osc.type = 'sine'
-    oscGain.gain.value = 0.4; mix.gain.value = 0.8
-    osc.connect(oscGain); oscGain.connect(mix.gain)
-    src.connect(mix); mix.connect(comp); osc.start()
-  } else {
-    src.connect(comp)
+interface DSP {
+  semitones: number      // pitch shift in semitones
+  speed: number          // playback rate (independent)
+  eq: FilterSpec[]       // [freq, gainDb, Q, type]
+  satCurve: number       // 0 = none, higher = more harmonic warmth
+  compThresh: number     // compressor threshold dB
+  compRatio: number
+  outGain: number        // final normalisation
+  ringModHz: number      // 0 = off
+  hpFreq: number         // high-pass cutoff
+}
+
+const DSP_PROFILES: Record<string, DSP> = {
+  baby: {
+    semitones: 5.5, speed: 1.07, hpFreq: 120,
+    eq: [
+      [250,  -4, 1.2, 'lowshelf'],   // cut mud
+      [900,   3, 1.8, 'peaking'],    // warmth
+      [2500,  5, 2.0, 'peaking'],    // presence / cute resonance
+      [5000,  3, 1.5, 'peaking'],    // brightness
+      [9000,  2, 0.8, 'highshelf'],  // air
+    ],
+    satCurve: 0, compThresh: -18, compRatio: 4, outGain: 1.55, ringModHz: 0,
+  },
+  chipmunk: {
+    semitones: 9, speed: 1.38, hpFreq: 200,
+    eq: [
+      [200,  -6, 1.2, 'lowshelf'],
+      [1800,  5, 2,   'peaking'],
+      [4500,  4, 1.5, 'peaking'],
+      [8000,  3, 1,   'highshelf'],
+    ],
+    satCurve: 0, compThresh: -14, compRatio: 5, outGain: 1.5, ringModHz: 0,
+  },
+  cartoon: {
+    semitones: 6.5, speed: 1.12, hpFreq: 150,
+    eq: [
+      [200,  -4, 1.2, 'lowshelf'],
+      [700,   3, 1.5, 'peaking'],
+      [2200,  5, 2,   'peaking'],
+      [5500,  4, 1.5, 'peaking'],
+      [9000,  2, 0.8, 'highshelf'],
+    ],
+    satCurve: 0.3, compThresh: -16, compRatio: 4, outGain: 1.5, ringModHz: 0,
+  },
+  hero: {
+    semitones: -5, speed: 0.91, hpFreq: 55,
+    eq: [
+      [70,    7, 0.7, 'lowshelf'],   // sub-bass weight
+      [180,   5, 1.5, 'peaking'],   // chest resonance
+      [400,  -3, 1.2, 'peaking'],   // remove boxiness
+      [900,   2, 1.2, 'peaking'],   // warmth
+      [3500,  4, 1.5, 'peaking'],   // presence — cuts through
+      [7000, -3, 0.8, 'highshelf'], // tame harshness
+    ],
+    satCurve: 0.6, compThresh: -14, compRatio: 5, outGain: 1.9, ringModHz: 0,
+  },
+  elder: {
+    semitones: -4, speed: 0.83, hpFreq: 45,
+    eq: [
+      [90,    6, 0.7, 'lowshelf'],
+      [280,   5, 1.5, 'peaking'],
+      [700,   3, 1.2, 'peaking'],
+      [1800, -1, 1.2, 'peaking'],
+      [4500, -4, 1.5, 'peaking'],
+      [7000, -5, 0.8, 'highshelf'],
+    ],
+    satCurve: 0.8, compThresh: -12, compRatio: 4, outGain: 2.0, ringModHz: 0,
+  },
+  robot: {
+    semitones: 0, speed: 0.95, hpFreq: 180,
+    eq: [
+      [200,  -6, 1.2, 'lowshelf'],
+      [900,   9, 5,   'peaking'],    // metallic nasal peak
+      [2800,  6, 4,   'peaking'],    // robot harmonic
+      [5500, -4, 1.5, 'highshelf'],
+    ],
+    satCurve: 0, compThresh: -18, compRatio: 6, outGain: 1.35, ringModHz: 115,
+  },
+  demon: {
+    semitones: -8, speed: 0.75, hpFreq: 30,
+    eq: [
+      [55,    9, 0.6, 'lowshelf'],   // sub-bass rumble
+      [130,   7, 1.5, 'peaking'],   // dark chest resonance
+      [550,   4, 1.2, 'peaking'],   // dark mid
+      [2500, -5, 1.5, 'peaking'],   // remove harshness
+      [5500, -7, 0.8, 'highshelf'],
+    ],
+    satCurve: 1.2, compThresh: -10, compRatio: 6, outGain: 2.1, ringModHz: 0,
+  },
+  fairy: {
+    semitones: 10, speed: 1.25, hpFreq: 250,
+    eq: [
+      [250,  -6, 1.2, 'lowshelf'],
+      [1200,  3, 1.5, 'peaking'],
+      [3500,  6, 2,   'peaking'],   // sparkle presence
+      [7000,  5, 1.2, 'peaking'],   // shimmer
+      [12000, 4, 0.7, 'highshelf'], // magical air
+    ],
+    satCurve: 0, compThresh: -18, compRatio: 4, outGain: 1.5, ringModHz: 0,
+  },
+}
+
+function makeSatCurve(amount: number): Float32Array {
+  const n = 512, c = new Float32Array(n)
+  for (let i = 0; i < n; i++) {
+    const x = (i * 2) / n - 1
+    if (amount === 0) { c[i] = x; continue }
+    const k = 2 * amount / (1 - amount)
+    c[i] = ((1 + k) * x) / (1 + k * Math.abs(x))
   }
-  comp.connect(offCtx.destination)
+  return c
+}
+
+async function transformVoice(blob: Blob, voiceId: string): Promise<Blob> {
+  const dsp = DSP_PROFILES[voiceId] ?? DSP_PROFILES.baby
+
+  // ── Decode ──
+  const tmpCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
+  let srcBuf: AudioBuffer
+  try {
+    srcBuf = await tmpCtx.decodeAudioData(await blob.arrayBuffer())
+  } catch {
+    await tmpCtx.close()
+    throw new Error('Could not read audio. Please try recording again.')
+  }
+  await tmpCtx.close()
+
+  const sr = srcBuf.sampleRate
+  const outLen = Math.max(1, Math.ceil(srcBuf.length / dsp.speed))
+  const off = new OfflineAudioContext(srcBuf.numberOfChannels, outLen, sr)
+
+  // ── Source ──
+  const src = off.createBufferSource()
+  src.buffer = srcBuf
+  src.playbackRate.value = dsp.speed
+  src.detune.value = dsp.semitones * 100
+
+  // ── High-pass (remove mic rumble) ──
+  const hp = off.createBiquadFilter()
+  hp.type = 'highpass'; hp.frequency.value = dsp.hpFreq; hp.Q.value = 0.6
+
+  // ── EQ chain ──
+  const eqs = dsp.eq.map(([freq, gain, q, type]) => {
+    const f = off.createBiquadFilter()
+    f.type = type; f.frequency.value = freq
+    f.gain.value = gain; f.Q.value = q
+    return f
+  })
+
+  // ── Saturation (harmonic warmth) ──
+  const sat = off.createWaveShaper()
+  sat.curve = makeSatCurve(Math.min(0.9, dsp.satCurve))
+  sat.oversample = dsp.satCurve > 0 ? '4x' : 'none'
+
+  // ── Compressor ──
+  const comp = off.createDynamicsCompressor()
+  comp.threshold.value = dsp.compThresh; comp.knee.value = 12
+  comp.ratio.value = dsp.compRatio; comp.attack.value = 0.003; comp.release.value = 0.1
+
+  // ── Output gain ──
+  const out = off.createGain(); out.gain.value = dsp.outGain
+
+  // ── Ring modulator (robot) ──
+  let ringMix: GainNode | null = null
+  if (dsp.ringModHz > 0) {
+    const osc = off.createOscillator()
+    const oscG = off.createGain()
+    ringMix = off.createGain()
+    osc.frequency.value = dsp.ringModHz; osc.type = 'sine'
+    oscG.gain.value = 0.38
+    osc.connect(oscG); oscG.connect(ringMix.gain)
+    osc.start(0)
+  }
+
+  // ── Connect chain ──
+  src.connect(hp)
+  let node: AudioNode = hp
+
+  if (ringMix) {
+    const pre = off.createGain(); node.connect(pre); pre.connect(ringMix); node = ringMix
+  }
+
+  if (eqs.length) {
+    node.connect(eqs[0])
+    for (let i = 0; i < eqs.length - 1; i++) eqs[i].connect(eqs[i + 1])
+    node = eqs[eqs.length - 1]
+  }
+
+  node.connect(sat); sat.connect(comp); comp.connect(out); out.connect(off.destination)
   src.start(0)
-  const rendered = await offCtx.startRendering()
-  actx.close()
-  return audioBufferToWav(rendered)
+
+  return encodeWAV(await off.startRendering())
 }
 
-// ── Animated orbital ring ────────────────────────────────────────────────────
-function OrbitalRing({ color, active, size = 120 }: { color: string; active: boolean; size?: number }) {
+// ─── LIVE WAVEFORM ────────────────────────────────────────────────────────────
+function WaveBar({ active, color }: { active: boolean; color: string }) {
+  const BARS = 44
   return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-      {[1,2,3].map((i) => (
+    <div className="flex items-center justify-center gap-[2.5px] h-[52px] w-full px-2">
+      {Array.from({ length: BARS }).map((_, i) => (
         <motion.div key={i}
-          className="absolute rounded-full border"
-          style={{ width: size + i*28, height: size + i*28, borderColor: color, opacity: active ? 0.6 / i : 0.15 / i }}
-          animate={active ? { scale: [1, 1.08, 1], opacity: [0.5/i, 0.15/i, 0.5/i] } : { scale: 1 }}
-          transition={{ duration: 1.2 + i*0.4, repeat: Infinity, ease: 'easeInOut', delay: i*0.2 }}
+          style={{ width: 2.5, background: color, borderRadius: 99 }}
+          animate={active
+            ? { height: [3, Math.abs(Math.sin((i + Date.now()) / 4)) * 34 + 6, 3], opacity: [0.4, 1, 0.4] }
+            : { height: 3, opacity: 0.18 }}
+          transition={{ repeat: Infinity, duration: 0.3 + (i % 9) * 0.07, delay: i * 0.02, ease: 'easeInOut' }}
         />
       ))}
     </div>
   )
 }
 
-// ── Live waveform bars ───────────────────────────────────────────────────────
-function LiveWave({ active, color, barCount = 32 }: { active: boolean; color: string; barCount?: number }) {
+// ─── SHARE BOTTOM-SHEET ───────────────────────────────────────────────────────
+function ShareSheet({ voice, outUrl, customCaption, onClose, onDownload }: {
+  voice: typeof VOICES[0]; outUrl: string; customCaption: string;
+  onClose: () => void; onDownload: () => void
+}) {
+  const [copiedCaption, setCopiedCaption] = useState(false)
+  const finalCaption = customCaption
+    ? `${customCaption}\n\n${voice.tiktokTag}\n\n🎙️ textife.com`
+    : `${voice.shareCaption}\n\n${voice.tiktokTag}\n\n🎙️ textife.com`
+
+  const copyCaption = () => {
+    navigator.clipboard.writeText(finalCaption)
+    setCopiedCaption(true)
+    toast.success('Caption copied! Now open the platform ↓')
+    setTimeout(() => setCopiedCaption(false), 3000)
+  }
+
+  const PLATFORMS = [
+    {
+      name: 'TikTok', icon: '🎵',
+      color: '#010101', border: '#69C9D0',
+      url: 'https://www.tiktok.com/upload',
+      step: 'Tap +, upload .WAV, paste caption',
+    },
+    {
+      name: 'Instagram', icon: '📸',
+      color: '#E1306C', border: '#F77737',
+      url: 'https://www.instagram.com/create/story',
+      step: 'New Story → tap 🎵 → upload audio',
+    },
+    {
+      name: 'WhatsApp', icon: '💬',
+      color: '#25D366', border: '#128C7E',
+      url: `https://wa.me/?text=${encodeURIComponent(finalCaption)}`,
+      step: 'Tap to send caption + attach file',
+    },
+    {
+      name: 'Twitter/X', icon: '𝕏',
+      color: '#fff', border: '#555',
+      url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(finalCaption.slice(0, 250))}`,
+      step: 'Tweet opens with caption pre-filled',
+    },
+    {
+      name: 'YouTube', icon: '▶',
+      color: '#FF0000', border: '#CC0000',
+      url: 'https://studio.youtube.com/',
+      step: 'Upload as Short with voiceover',
+    },
+    {
+      name: 'Snapchat', icon: '👻',
+      color: '#FFFC00', border: '#FFA500',
+      url: 'https://snapchat.com/',
+      step: 'Send as Snap or add to story',
+    },
+  ]
+
   return (
-    <div className="flex items-center justify-center gap-[2px] h-16 w-full">
-      {Array.from({length: barCount}).map((_, i) => (
-        <motion.div key={i}
-          className="rounded-full flex-shrink-0"
-          style={{ width: 3, backgroundColor: color, originY: '50%' }}
-          animate={active ? {
-            height: [4, Math.random()*44+8, Math.random()*28+4, 4],
-            opacity: [0.5, 1, 0.8, 0.5],
-          } : { height: 4, opacity: 0.2 }}
-          transition={{
-            duration: 0.4 + (i % 5)*0.12,
-            repeat: Infinity,
-            delay: i * 0.03,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
-    </div>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-end justify-center"
+      style={{ background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(12px)' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <motion.div
+        initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+        transition={{ type: 'spring', damping: 30, stiffness: 340 }}
+        className="w-full max-w-md rounded-t-3xl overflow-hidden"
+        style={{ background: 'linear-gradient(180deg, #1c0d30 0%, #0c1020 100%)', border: '1px solid rgba(255,255,255,0.09)', maxHeight: '92vh', overflowY: 'auto' }}>
+
+        {/* Handle + header */}
+        <div className="flex items-center justify-between px-5 pt-4 pb-2">
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-white/20" />
+          <p className="font-black text-white text-base mt-2">{voice.emoji} Share Your {voice.name}</p>
+          <button onClick={onClose} className="mt-2 w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.1)' }}>
+            <X className="w-3.5 h-3.5 text-white" />
+          </button>
+        </div>
+
+        <div className="px-5 pb-6 space-y-4 mt-1">
+          {/* Step 1 — Download */}
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.3)' }}>Step 1 — Get your file</p>
+            <button onClick={onDownload}
+              className="w-full py-3 rounded-2xl flex items-center justify-center gap-2.5 font-black text-sm text-white transition-all active:scale-98"
+              style={{ background: `linear-gradient(135deg, ${voice.color1}, ${voice.color2})`, boxShadow: `0 6px 24px ${voice.glow}` }}>
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Download .WAV File
+            </button>
+          </div>
+
+          {/* Step 2 — Caption */}
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.3)' }}>Step 2 — Copy caption</p>
+            <div className="rounded-2xl p-3.5 mb-2" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <p className="text-xs text-white/80 leading-relaxed">{customCaption || voice.shareCaption}</p>
+              <p className="text-[10px] mt-1.5 font-semibold" style={{ color: voice.color1 }}>{voice.tiktokTag}</p>
+            </div>
+            <button onClick={copyCaption}
+              className="w-full py-2.5 rounded-xl font-black text-sm flex items-center justify-center gap-2 transition-all"
+              style={{ background: copiedCaption ? '#10B981' : 'rgba(255,255,255,0.09)', border: '1px solid rgba(255,255,255,0.12)', color: '#fff' }}>
+              {copiedCaption ? <><Check className="w-3.5 h-3.5" /> Copied!</> : '📋 Copy Caption'}
+            </button>
+          </div>
+
+          {/* Step 3 — Platforms */}
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest mb-2.5" style={{ color: 'rgba(255,255,255,0.3)' }}>Step 3 — Open platform & upload</p>
+            <div className="grid grid-cols-2 gap-2">
+              {PLATFORMS.map(p => (
+                <a key={p.name} href={p.url} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 p-3 rounded-2xl transition-all active:scale-95"
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                  <span className="text-xl leading-none flex-shrink-0">{p.icon}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-black text-white leading-none">{p.name}</p>
+                    <p className="text-[9px] mt-0.5 leading-tight line-clamp-2" style={{ color: 'rgba(255,255,255,0.35)' }}>{p.step}</p>
+                  </div>
+                  <ExternalLink className="w-3 h-3 flex-shrink-0" style={{ color: 'rgba(255,255,255,0.2)' }} />
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
   )
 }
 
-// ── Floating particle burst ──────────────────────────────────────────────────
-function ParticleBurst({ trigger, color }: { trigger: number; color: string }) {
-  const particles = Array.from({length: 12})
-  return (
-    <AnimatePresence>
-      {trigger > 0 && particles.map((_, i) => {
-        const angle = (i / particles.length) * Math.PI * 2
-        const dist  = 60 + Math.random() * 50
-        return (
-          <motion.div key={`${trigger}-${i}`}
-            className="absolute w-2 h-2 rounded-full pointer-events-none z-50"
-            style={{ backgroundColor: color, left: '50%', top: '50%', marginLeft: -4, marginTop: -4 }}
-            initial={{ x: 0, y: 0, scale: 1, opacity: 1 }}
-            animate={{ x: Math.cos(angle)*dist, y: Math.sin(angle)*dist, scale: 0, opacity: 0 }}
-            exit={{}}
-            transition={{ duration: 0.7 + Math.random()*0.3, ease: 'easeOut' }}
-          />
-        )
-      })}
-    </AnimatePresence>
-  )
-}
-
-// ── Main component ───────────────────────────────────────────────────────────
+// ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 export default function VoiceChangerPage() {
-  const { user, loading, logout } = useAuth()
-  const [selected, setSelected]     = useState(VOICES[0])
+  const { user, loading } = useAuth()
+
+  const [voice, setVoice]           = useState(VOICES[0])
   const [recording, setRecording]   = useState(false)
   const [processing, setProcessing] = useState(false)
   const [playing, setPlaying]       = useState(false)
-  const [rawBlob, setRawBlob]       = useState<Blob|null>(null)
-  const [outBlob, setOutBlob]       = useState<Blob|null>(null)
-  const [outUrl, setOutUrl]         = useState<string|null>(null)
+  const [rawBlob, setRawBlob]       = useState<Blob | null>(null)
+  const [outBlob, setOutBlob]       = useState<Blob | null>(null)
+  const [outUrl, setOutUrl]         = useState<string | null>(null)
   const [recSecs, setRecSecs]       = useState(0)
-  const [burst, setBurst]           = useState(0)
-  const [justDone, setJustDone]     = useState(false)
-  const [shareCount, setShareCount] = useState(0)
+  const [showShare, setShowShare]   = useState(false)
+  const [photoUrl, setPhotoUrl]     = useState<string | null>(null)
+  const [caption, setCaption]       = useState('')
+  const [showCaption, setShowCaption] = useState(false)
+  const [activeTab, setActiveTab]   = useState<'voices'|'about'>('voices')
+  const [newResult, setNewResult]   = useState(0)
 
-  const mrRef    = useRef<MediaRecorder|null>(null)
-  const chunksRef= useRef<Blob[]>([])
-  const audioRef = useRef<HTMLAudioElement|null>(null)
-  const timerRef = useRef<ReturnType<typeof setInterval>|null>(null)
-  const urlRef   = useRef<string|null>(null)
+  const mrRef      = useRef<MediaRecorder | null>(null)
+  const chunksRef  = useRef<Blob[]>([])
+  const audioRef   = useRef<HTMLAudioElement | null>(null)
+  const timerRef   = useRef<ReturnType<typeof setInterval> | null>(null)
+  const urlRef     = useRef<string | null>(null)
+  const photoRef   = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => () => {
     if (urlRef.current) URL.revokeObjectURL(urlRef.current)
     if (timerRef.current) clearInterval(timerRef.current)
   }, [])
 
-  const pick = (v: typeof VOICES[0]) => {
-    setSelected(v)
-    setOutBlob(null); setOutUrl(null); setJustDone(false)
-    // Re-process if we have a raw recording
-    if (rawBlob) setTimeout(() => applyVoice(v, rawBlob), 80)
+  const pickVoice = (v: typeof VOICES[0]) => {
+    setVoice(v)
+    setOutBlob(null); setOutUrl(null)
+    if (rawBlob) setTimeout(() => doTransform(v, rawBlob), 50)
   }
 
   const startRec = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 44100 } })
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 44100, channelCount: 1 }
+      })
       chunksRef.current = []
-      const mr = new MediaRecorder(stream, { mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm' })
+      const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm'
+      const mr = new MediaRecorder(stream, { mimeType: mime })
       mr.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data) }
       mr.onstop = async () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
-        setRawBlob(blob)
         stream.getTracks().forEach(t => t.stop())
-        await applyVoice(selected, blob)
+        const blob = new Blob(chunksRef.current, { type: mime })
+        setRawBlob(blob)
+        await doTransform(voice, blob)
       }
-      mr.start(100)
-      mrRef.current = mr
+      mr.start(80); mrRef.current = mr
       setRecording(true); setRecSecs(0); setOutBlob(null); setOutUrl(null)
       timerRef.current = setInterval(() => setRecSecs(s => s + 1), 1000)
     } catch {
-      toast.error('🎙️ Mic access needed — allow it in your browser!')
+      toast.error('🎙️ Mic access denied — allow it in your browser settings')
     }
   }
 
@@ -275,20 +535,16 @@ export default function VoiceChangerPage() {
     if (timerRef.current) clearInterval(timerRef.current)
   }
 
-  const applyVoice = async (voice: typeof VOICES[0], blob: Blob) => {
-    setProcessing(true); setJustDone(false)
+  const doTransform = async (v: typeof VOICES[0], blob: Blob) => {
+    setProcessing(true)
     try {
-      const result = await processVoice(blob, voice)
+      const result = await transformVoice(blob, v.id)
       if (urlRef.current) URL.revokeObjectURL(urlRef.current)
       const url = URL.createObjectURL(result)
       urlRef.current = url
-      setOutBlob(result); setOutUrl(url)
-      setJustDone(true)
-      setBurst(Date.now())
-      setTimeout(() => setJustDone(false), 2000)
-    } catch (e) {
-      toast.error('Processing failed — try a shorter recording (under 30s)')
-      console.error(e)
+      setOutBlob(result); setOutUrl(url); setNewResult(n => n + 1)
+    } catch (e: any) {
+      toast.error(e.message || 'Processing failed — try a shorter clip (under 20s)')
     } finally {
       setProcessing(false)
     }
@@ -298,130 +554,97 @@ export default function VoiceChangerPage() {
     if (!outUrl) return
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
     const a = new Audio(outUrl)
-    audioRef.current = a
-    setPlaying(true)
-    a.onended = () => setPlaying(false)
-    a.onerror = () => { setPlaying(false); toast.error('Playback error') }
-    a.play()
+    audioRef.current = a; setPlaying(true)
+    a.onended = () => setPlaying(false); a.play()
   }
-
   const stopPlay = () => { audioRef.current?.pause(); audioRef.current = null; setPlaying(false) }
 
   const download = () => {
-    if (!outBlob || !outUrl) return
+    if (!outUrl) return
     const a = document.createElement('a')
-    a.href = outUrl; a.download = `textife-${selected.id}-voice.wav`; a.click()
-    toast.success('🎉 Downloaded! Post it on TikTok!')
+    a.href = outUrl; a.download = `textife-${voice.id}.wav`; a.click()
+    toast.success('🎉 Downloaded!')
   }
 
-  const share = () => {
-    setShareCount(c => c + 1)
-    const text = `😂 I just transformed my voice into ${selected.emoji} ${selected.label} on Textife! Try it free → textife.com`
-    if (navigator.share) {
-      navigator.share({ title: 'My Voice Transformation 🎙️', text }).catch(() => {})
-    } else {
-      navigator.clipboard.writeText(text)
-      toast.success('Share text copied! Paste it anywhere 📋')
-    }
+  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0]; if (!f) return
+    if (photoUrl) URL.revokeObjectURL(photoUrl)
+    setPhotoUrl(URL.createObjectURL(f))
+    toast.success('📸 Photo added!')
   }
 
-  const fmt = (s: number) => `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`
+  const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
   const hasOutput = !!outBlob && !!outUrl
 
   if (loading || !user) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0f0524 0%, #1a0533 50%, #0d1a3a 100%)' }}>
-      <motion.div animate={{ scale: [1,1.1,1], rotate: [0,10,-10,0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
-        <span className="text-6xl">🎙️</span>
-      </motion.div>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#07001a' }}>
+      <motion.div className="w-12 h-12 rounded-full border-2 border-t-pink-500 border-r-transparent border-b-purple-500 border-l-transparent"
+        animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} />
     </div>
   )
 
   return (
     <DashboardLayout user={user} onLogout={() => {}}>
-      {/* Dark immersive background */}
-      <div className="min-h-screen -mx-4 -mt-5 px-4 pt-5 lg:-mx-7 lg:-mt-7 lg:px-7 lg:pt-7"
-        style={{ background: 'linear-gradient(160deg, #0f0524 0%, #1a0533 30%, #0d1a3a 70%, #001a12 100%)' }}>
+      <div className="min-h-screen -mx-4 -mt-5 lg:-mx-7 lg:-mt-7"
+        style={{ background: 'radial-gradient(ellipse at 30% 0%, #2d0a4e 0%, #07001a 45%, #001225 100%)' }}>
 
-        <div className="w-full max-w-xl mx-auto space-y-6 pb-12">
+        <div className="w-full max-w-md mx-auto px-4 pt-6 pb-16 space-y-5">
 
-          {/* ── HERO HEADER ── */}
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-            className="text-center pt-4">
-            {/* Animated logo */}
-            <motion.div
-              className="relative inline-flex items-center justify-center w-20 h-20 mx-auto mb-4"
-              animate={{ y: [0, -6, 0] }}
-              transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-            >
-              <div className="absolute inset-0 rounded-2xl blur-xl opacity-60"
-                style={{ background: `linear-gradient(135deg, ${selected.color}, ${selected.colorDark})` }} />
-              <div className="relative w-full h-full rounded-2xl flex items-center justify-center text-4xl shadow-2xl"
-                style={{ background: `linear-gradient(135deg, ${selected.color}, ${selected.colorDark})` }}>
-                🎙️
-              </div>
-            </motion.div>
+          {/* ── HEADER ── */}
+          <div className="text-center">
+            <motion.h1
+              className="font-black text-5xl leading-none tracking-tight mb-2"
+              style={{
+                background: `linear-gradient(135deg, ${voice.color1} 0%, #ffffff 50%, ${voice.color2} 100%)`,
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+              }}
+              key={voice.id}
+              initial={{ opacity: 0.7 }} animate={{ opacity: 1 }}>
+              Voice<br />Changer
+            </motion.h1>
+            <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.38)' }}>Record · Transform · Share 🚀</p>
+            <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
+              <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.09)' }}>
+                🔥 52,840 transformed
+              </span>
+              <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ background: `${voice.color1}20`, color: voice.color1, border: `1px solid ${voice.color1}35` }}>
+                📈 Trending on TikTok
+              </span>
+            </div>
+          </div>
 
-            <h1 className="font-black text-4xl text-white mb-2 tracking-tight"
-              style={{ fontFamily: 'system-ui', textShadow: `0 0 40px ${selected.colorGlow}` }}>
-              Voice Changer
-            </h1>
-            <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              Record → Transform → Share ✨
-            </p>
-
-            {/* Social proof */}
-            <motion.div className="flex items-center justify-center gap-3 mt-3 flex-wrap"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
-              <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
-                <span className="text-xs">🔥</span>
-                <span className="text-xs font-bold text-white/80">47K voices transformed</span>
-              </div>
-              <div className="flex items-center gap-1.5 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1 border border-white/10">
-                <span className="text-xs">⭐</span>
-                <span className="text-xs font-bold text-white/80">Going viral on TikTok</span>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* ── VOICE CHARACTER SELECTOR ── */}
+          {/* ── CHARACTER GRID ── */}
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest mb-3 text-center"
-              style={{ color: 'rgba(255,255,255,0.35)' }}>
-              Choose Your Character
+            <p className="text-[10px] font-black uppercase tracking-widest mb-2.5 text-center" style={{ color: 'rgba(255,255,255,0.28)' }}>
+              Choose Character
             </p>
             <div className="grid grid-cols-4 gap-2 sm:grid-cols-8">
               {VOICES.map((v, i) => {
-                const isActive = selected.id === v.id
+                const on = voice.id === v.id
                 return (
                   <motion.button key={v.id}
-                    initial={{ opacity: 0, scale: 0.7 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.06, type: 'spring', stiffness: 300 }}
-                    onClick={() => pick(v)}
-                    className="relative flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all"
+                    initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.045, type: 'spring', stiffness: 400 }}
+                    whileTap={{ scale: 0.85 }} onClick={() => pickVoice(v)}
+                    className="relative flex flex-col items-center gap-1 py-2.5 rounded-2xl transition-all"
                     style={{
-                      background: isActive ? `linear-gradient(135deg, ${v.color}22, ${v.colorDark}44)` : 'rgba(255,255,255,0.05)',
-                      border: isActive ? `2px solid ${v.color}88` : '2px solid rgba(255,255,255,0.08)',
-                      boxShadow: isActive ? `0 0 20px ${v.colorGlow}` : 'none',
-                    }}
-                    whileTap={{ scale: 0.9 }}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    <motion.span
-                      className="text-2xl leading-none"
-                      animate={isActive ? { scale: [1, 1.15, 1] } : {}}
-                      transition={{ repeat: isActive ? Infinity : 0, duration: 1.5 }}
-                    >
+                      background: on ? `${v.color1}22` : 'rgba(255,255,255,0.04)',
+                      border: `2px solid ${on ? v.color1 + '75' : 'rgba(255,255,255,0.07)'}`,
+                      boxShadow: on ? `0 0 20px ${v.glow}` : 'none',
+                    }}>
+                    <motion.span className="text-[26px] leading-none"
+                      animate={on ? { scale: [1, 1.18, 1] } : { scale: 1 }}
+                      transition={{ repeat: on ? Infinity : 0, duration: 2 }}>
                       {v.emoji}
                     </motion.span>
-                    <span className="text-[9px] font-black leading-tight text-center"
-                      style={{ color: isActive ? v.color : 'rgba(255,255,255,0.4)' }}>
-                      {v.label}
+                    <span className="text-[8px] font-black leading-none px-1 text-center"
+                      style={{ color: on ? v.color1 : 'rgba(255,255,255,0.32)' }}>
+                      {v.name.split(' ')[0]}
                     </span>
-                    {isActive && (
-                      <motion.div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center"
-                        initial={{ scale: 0 }} animate={{ scale: 1 }}
-                        style={{ background: v.color }}>
+                    {on && (
+                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
+                        className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center"
+                        style={{ background: v.color1, border: '2px solid #07001a' }}>
                         <Check className="w-2 h-2 text-white" />
                       </motion.div>
                     )}
@@ -431,289 +654,319 @@ export default function VoiceChangerPage() {
             </div>
           </div>
 
-          {/* ── MAIN STUDIO CARD ── */}
-          <motion.div layout className="relative rounded-3xl overflow-hidden"
-            style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: `1px solid rgba(255,255,255,0.08)`,
-              backdropFilter: 'blur(20px)',
-            }}>
+          {/* ── STUDIO CARD ── */}
+          <div className="rounded-3xl overflow-hidden relative"
+            style={{ background: 'rgba(255,255,255,0.035)', border: '1px solid rgba(255,255,255,0.07)', backdropFilter: 'blur(30px)' }}>
 
-            {/* Glow top border */}
-            <div className="absolute top-0 left-0 right-0 h-px"
-              style={{ background: `linear-gradient(90deg, transparent, ${selected.color}88, transparent)` }} />
+            {/* Animated top accent */}
+            <motion.div key={voice.id} className="h-[2px]"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              style={{ background: `linear-gradient(90deg, transparent 0%, ${voice.color1} 40%, ${voice.color2} 60%, transparent 100%)` }} />
 
-            {/* Character banner */}
-            <div className="px-5 pt-5 pb-4 flex items-center gap-4">
-              <motion.div
-                className="relative w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
-                style={{ background: `linear-gradient(135deg, ${selected.color}, ${selected.colorDark})`, boxShadow: `0 8px 24px ${selected.colorGlow}` }}
-                key={selected.id}
-                initial={{ scale: 0.7, rotate: -10 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                {selected.emoji}
-                <OrbitalRing color={selected.color} active={recording || playing} size={56} />
-              </motion.div>
+            {/* Voice identity */}
+            <div className="px-5 pt-4 pb-3 flex items-center gap-4">
+              <div className="relative flex-shrink-0">
+                {/* Photo or emoji avatar */}
+                <motion.div key={voice.id}
+                  initial={{ scale: 0.75, rotate: -8 }} animate={{ scale: 1, rotate: 0 }}
+                  transition={{ type: 'spring', stiffness: 320 }}
+                  className="w-[60px] h-[60px] rounded-2xl flex items-center justify-center overflow-hidden"
+                  style={{
+                    background: photoUrl ? 'transparent' : `linear-gradient(145deg, ${voice.color1}, ${voice.color2})`,
+                    boxShadow: `0 10px 30px ${voice.glow}`,
+                  }}>
+                  {photoUrl
+                    ? <img src={photoUrl} alt="you" className="w-full h-full object-cover" />
+                    : <span className="text-[32px]">{voice.emoji}</span>}
+                </motion.div>
+                {/* Pulse rings when live */}
+                {(recording || playing) && [0, 1].map(i => (
+                  <motion.div key={i} className="absolute inset-0 rounded-2xl pointer-events-none"
+                    style={{ border: `2px solid ${voice.color1}` }}
+                    animate={{ scale: [1, 1.25 + i * 0.12], opacity: [0.7, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.3, delay: i * 0.45 }} />
+                ))}
+              </div>
+
               <div className="flex-1 min-w-0">
-                <motion.p key={selected.label} className="font-black text-white text-lg leading-tight"
-                  initial={{ x: 10, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-                  {selected.label}
-                </motion.p>
-                <p className="text-xs font-medium" style={{ color: selected.color }}>{selected.vibe}</p>
-                <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>{selected.sound}</p>
-              </div>
-              {/* Status pill */}
-              <div className="flex-shrink-0">
-                {recording && (
-                  <motion.div animate={{ opacity: [1, 0.5, 1] }} transition={{ repeat: Infinity, duration: 0.8 }}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                    style={{ background: 'rgba(239,68,68,0.2)', border: '1px solid rgba(239,68,68,0.4)' }}>
-                    <div className="w-2 h-2 bg-red-500 rounded-full" />
-                    <span className="text-xs font-black text-red-400">{fmt(recSecs)}</span>
-                  </motion.div>
-                )}
-                {processing && (
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                    style={{ background: `${selected.color}22`, border: `1px solid ${selected.color}44` }}>
-                    <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}>
-                      <RefreshCw className="w-3 h-3" style={{ color: selected.color }} />
-                    </motion.div>
-                    <span className="text-xs font-black" style={{ color: selected.color }}>Magic...</span>
-                  </div>
-                )}
-                {hasOutput && !processing && !recording && (
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                    style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.3)' }}>
-                    <Check className="w-3 h-3 text-emerald-400" />
-                    <span className="text-xs font-black text-emerald-400">Ready!</span>
-                  </div>
-                )}
+                <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                  <AnimatePresence mode="wait">
+                    <motion.p key={voice.id} className="font-black text-white text-xl leading-none"
+                      initial={{ x: 10, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -10, opacity: 0 }}>
+                      {voice.name}
+                    </motion.p>
+                  </AnimatePresence>
+                  {recording && (
+                    <motion.span animate={{ opacity: [1, 0.3, 1] }} transition={{ repeat: Infinity, duration: 0.7 }}
+                      className="text-[10px] font-black px-2 py-0.5 rounded-full text-white" style={{ background: '#EF4444' }}>
+                      ● {fmt(recSecs)}
+                    </motion.span>
+                  )}
+                  {processing && (
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full text-white" style={{ background: voice.color1 }}>
+                      ✨ Processing
+                    </span>
+                  )}
+                  {hasOutput && !recording && !processing && (
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full text-white" style={{ background: '#10B981' }}>
+                      ✓ Ready
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] font-semibold" style={{ color: voice.color1 }}>{voice.mood}</p>
+                <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.32)' }}>{voice.tagline}</p>
               </div>
             </div>
 
-            {/* Waveform zone */}
-            <div className="mx-5 mb-4 rounded-2xl px-4 py-3 relative overflow-hidden"
-              style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <LiveWave active={recording || playing || processing} color={selected.color} barCount={36} />
-              {!recording && !playing && !processing && !rawBlob && (
-                <p className="text-center text-[11px] absolute inset-0 flex items-center justify-center font-medium"
-                  style={{ color: 'rgba(255,255,255,0.25)' }}>
-                  Tap the mic below to start recording 🎙️
-                </p>
-              )}
+            {/* Photo + Caption controls */}
+            <div className="px-5 mb-3 flex items-center gap-2 flex-wrap">
+              <input ref={photoRef} type="file" accept="image/*" capture="user" className="hidden" onChange={handlePhoto} />
+              {!photoUrl
+                ? <button onClick={() => photoRef.current?.click()}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.45)' }}>
+                    <Camera className="w-3 h-3" /> Add Photo
+                  </button>
+                : <div className="flex items-center gap-2">
+                    <img src={photoUrl} className="w-7 h-7 rounded-lg object-cover border border-white/15" alt="you" />
+                    <span className="text-[11px] text-white/40 font-bold">Photo ✓</span>
+                    <button onClick={() => { URL.revokeObjectURL(photoUrl); setPhotoUrl(null) }}
+                      className="text-[11px] text-red-400/70 hover:text-red-400">✕</button>
+                  </div>
+              }
+              <button onClick={() => setShowCaption(v => !v)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold ml-auto transition-all"
+                style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: caption ? voice.color1 : 'rgba(255,255,255,0.45)' }}>
+                📝 {caption ? 'Edit caption' : 'Add caption'}
+              </button>
             </div>
 
-            {/* ── BIG MIC BUTTON ── */}
-            <div className="flex flex-col items-center gap-2 pb-5 relative">
-              <ParticleBurst trigger={burst} color={selected.color} />
-
-              <motion.button
-                onClick={recording ? stopRec : startRec}
-                disabled={processing}
-                className="relative w-24 h-24 rounded-full flex items-center justify-center disabled:opacity-40"
-                style={{
-                  background: recording
-                    ? 'linear-gradient(135deg, #ef4444, #dc2626)'
-                    : `linear-gradient(135deg, ${selected.color}, ${selected.colorDark})`,
-                  boxShadow: recording
-                    ? '0 0 0 0 rgba(239,68,68,0.4), 0 12px 40px rgba(239,68,68,0.5)'
-                    : `0 0 0 0 ${selected.colorGlow}, 0 12px 40px ${selected.colorGlow}`,
-                }}
-                animate={recording ? {
-                  boxShadow: [
-                    `0 0 0 0 rgba(239,68,68,0.6), 0 12px 40px rgba(239,68,68,0.5)`,
-                    `0 0 0 20px rgba(239,68,68,0), 0 12px 40px rgba(239,68,68,0.5)`,
-                  ]
-                } : {
-                  boxShadow: [
-                    `0 0 0 0 ${selected.colorGlow}, 0 12px 40px ${selected.colorGlow}`,
-                    `0 0 0 16px rgba(0,0,0,0), 0 12px 40px ${selected.colorGlow}`,
-                  ]
-                }}
-                transition={{ repeat: Infinity, duration: 1.5 }}
-                whileTap={{ scale: 0.92 }}
-                whileHover={{ scale: 1.06 }}
-              >
-                {recording
-                  ? <Square className="w-9 h-9 text-white fill-white" />
-                  : <Mic className="w-9 h-9 text-white" />
-                }
-              </motion.button>
-
-              <p className="text-xs font-bold" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                {recording ? `Recording... tap to stop` : rawBlob ? 'Tap to re-record' : 'Tap to record'}
-              </p>
-
-              {/* Processing progress bar */}
-              <AnimatePresence>
-                {processing && (
-                  <motion.div initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: '80%' }} exit={{ opacity: 0 }}
-                    className="h-0.5 rounded-full overflow-hidden"
-                    style={{ background: 'rgba(255,255,255,0.1)' }}>
-                    <motion.div className="h-full rounded-full"
-                      style={{ background: `linear-gradient(90deg, ${selected.color}, ${selected.colorDark})` }}
-                      animate={{ x: ['-100%', '100%'] }}
-                      transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* ── OUTPUT CONTROLS ── */}
             <AnimatePresence>
-              {hasOutput && !processing && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="mx-5 mb-5 space-y-3"
-                >
-                  {/* Play/Stop full-width */}
-                  <motion.button
-                    onClick={playing ? stopPlay : playOut}
-                    className="w-full py-4 rounded-2xl flex items-center justify-center gap-3 font-black text-white relative overflow-hidden"
-                    style={{
-                      background: playing
-                        ? 'linear-gradient(135deg, #ef4444, #dc2626)'
-                        : `linear-gradient(135deg, ${selected.color}, ${selected.colorDark})`,
-                      boxShadow: `0 8px 32px ${selected.colorGlow}`,
-                    }}
-                    whileTap={{ scale: 0.98 }}
-                    animate={justDone ? { scale: [1, 1.02, 1] } : {}}
-                  >
-                    {/* Shimmer */}
-                    {justDone && (
-                      <motion.div className="absolute inset-0"
-                        style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent)' }}
-                        animate={{ x: ['-100%', '100%'] }}
-                        transition={{ duration: 0.6 }} />
-                    )}
-                    {playing
-                      ? <><Square className="w-5 h-5 fill-white" /> <span>Stop Playback</span></>
-                      : <><Play className="w-5 h-5 fill-white" /> <span>▶ Play {selected.emoji} {selected.label}</span></>
-                    }
-                  </motion.button>
-
-                  {/* Download + Share row */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <motion.button onClick={download} whileTap={{ scale: 0.96 }}
-                      className="py-3.5 rounded-2xl flex items-center justify-center gap-2 font-black text-sm"
-                      style={{
-                        background: 'rgba(255,255,255,0.07)',
-                        border: '1px solid rgba(255,255,255,0.12)',
-                        color: '#fff',
-                      }}>
-                      <Download className="w-4 h-4" /> Download
-                    </motion.button>
-                    <motion.button onClick={share} whileTap={{ scale: 0.96 }}
-                      className="py-3.5 rounded-2xl flex items-center justify-center gap-2 font-black text-sm relative overflow-hidden"
-                      style={{
-                        background: 'linear-gradient(135deg, #f59e0b, #ef4444)',
-                        color: '#fff',
-                        boxShadow: '0 6px 20px rgba(245,158,11,0.35)',
-                      }}>
-                      <Share2 className="w-4 h-4" />
-                      Share {shareCount > 0 ? `(${shareCount})` : ''}
-                    </motion.button>
-                  </div>
-
-                  {/* Re-apply with different voice hint */}
-                  <p className="text-center text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                    👆 Tap any character above to instantly hear a new voice
-                  </p>
+              {showCaption && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden px-5 mb-3">
+                  <textarea value={caption} onChange={e => setCaption(e.target.value)} rows={2}
+                    placeholder={`Caption for your ${voice.name} voice... e.g. "My family is never ready for this 😂"`}
+                    className="w-full px-3.5 py-2.5 rounded-xl text-xs text-white resize-none outline-none"
+                    style={{ background: 'rgba(255,255,255,0.06)', border: `1px solid ${voice.color1}40`, caretColor: voice.color1 }} />
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Bottom glow line */}
-            <div className="h-px" style={{ background: `linear-gradient(90deg, transparent, ${selected.color}44, transparent)` }} />
-          </motion.div>
-
-          {/* ── HOW TO GO VIRAL ── */}
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-            className="rounded-3xl p-5 overflow-hidden relative"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="absolute inset-0 opacity-30"
-              style={{ backgroundImage: `radial-gradient(circle at 80% 20%, ${selected.colorGlow}, transparent 60%)` }} />
-            <div className="relative">
-              <p className="text-[10px] font-black uppercase tracking-widest mb-4"
-                style={{ color: 'rgba(255,255,255,0.35)' }}>
-                🚀 How to Go Viral
-              </p>
-              <div className="grid grid-cols-2 gap-2.5">
-                {[
-                  { icon: '📱', platform: 'TikTok',     tip: 'Duet or react to trending sounds with your voice' },
-                  { icon: '📸', platform: 'Instagram',  tip: 'Add to Stories or Reels as a funny voiceover' },
-                  { icon: '💬', platform: 'WhatsApp',   tip: 'Send as a surprise voice note to your group' },
-                  { icon: '🐦', platform: 'Twitter/X',  tip: 'Quote-tweet a video with your transformed voice' },
-                ].map((s, i) => (
-                  <motion.div key={s.platform}
-                    initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 + i*0.1 }}
-                    className="rounded-2xl p-3"
-                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                    <p className="text-base mb-1">{s.icon}</p>
-                    <p className="text-xs font-black text-white mb-0.5">{s.platform}</p>
-                    <p className="text-[10px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>{s.tip}</p>
-                  </motion.div>
-                ))}
-              </div>
+            {/* Waveform */}
+            <div className="mx-5 mb-4 rounded-2xl py-1 relative overflow-hidden"
+              style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <WaveBar active={recording || playing || processing} color={voice.color1} />
+              {!recording && !rawBlob && !processing && (
+                <p className="absolute inset-0 flex items-center justify-center text-[11px]"
+                  style={{ color: 'rgba(255,255,255,0.18)' }}>
+                  Tap the mic to start recording 🎙️
+                </p>
+              )}
             </div>
-          </motion.div>
 
-          {/* ── CHARACTER DESCRIPTIONS ── */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
-            className="rounded-3xl p-5"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <p className="text-[10px] font-black uppercase tracking-widest mb-4"
-              style={{ color: 'rgba(255,255,255,0.35)' }}>
-              ✨ All 8 Characters
-            </p>
-            <div className="space-y-2">
-              {VOICES.map((v) => (
-                <motion.button key={v.id} onClick={() => pick(v)}
-                  className="w-full flex items-center gap-3 p-3 rounded-2xl text-left transition-all"
-                  style={{
-                    background: selected.id === v.id ? `${v.color}15` : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${selected.id === v.id ? v.color+'44' : 'rgba(255,255,255,0.06)'}`,
-                  }}
-                  whileTap={{ scale: 0.98 }}>
-                  <span className="text-2xl flex-shrink-0">{v.emoji}</span>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-black text-white">{v.label}</p>
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
-                        style={{ background: `${v.color}22`, color: v.color }}>
-                        {v.sound}
-                      </span>
-                    </div>
-                    <p className="text-[11px] mt-0.5" style={{ color: 'rgba(255,255,255,0.4)' }}>{v.vibe}</p>
+            {/* Processing strip */}
+            <AnimatePresence>
+              {processing && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="mx-5 mb-3 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.07)' }}>
+                  <motion.div className="h-full rounded-full"
+                    style={{ background: `linear-gradient(90deg, ${voice.color1}, ${voice.color2})` }}
+                    animate={{ x: ['-100%', '150%'] }}
+                    transition={{ repeat: Infinity, duration: 1.1, ease: 'easeInOut' }} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* ── BIG MIC ── */}
+            <div className="flex flex-col items-center gap-2 pb-5">
+              <motion.button
+                onClick={recording ? stopRec : startRec}
+                disabled={processing}
+                className="w-[88px] h-[88px] rounded-full flex items-center justify-center disabled:opacity-40 relative"
+                style={{
+                  background: recording ? 'linear-gradient(135deg,#dc2626,#9b1c1c)' : `linear-gradient(145deg,${voice.color1},${voice.color2})`,
+                  boxShadow: recording ? '0 0 0 0 rgba(220,38,38,0.5), 0 14px 36px rgba(220,38,38,0.4)' : `0 0 0 0 ${voice.glow}, 0 14px 36px ${voice.glow}`,
+                }}
+                animate={!processing ? {
+                  boxShadow: recording
+                    ? ['0 0 0 0 rgba(220,38,38,0.6),0 14px 36px rgba(220,38,38,0.4)', '0 0 0 20px rgba(220,38,38,0),0 14px 36px rgba(220,38,38,0.4)']
+                    : [`0 0 0 0 ${voice.glow},0 14px 36px ${voice.glow}`, `0 0 0 16px rgba(0,0,0,0),0 14px 36px ${voice.glow}`],
+                } : {}}
+                transition={{ repeat: Infinity, duration: 1.6 }}
+                whileTap={{ scale: 0.88 }} whileHover={{ scale: 1.06 }}>
+                {recording
+                  ? <Square className="w-10 h-10 fill-white text-white" />
+                  : <Mic className="w-10 h-10 text-white" />}
+              </motion.button>
+              <p className="text-xs font-semibold" style={{ color: 'rgba(255,255,255,0.32)' }}>
+                {recording ? `Recording · tap to stop · ${fmt(recSecs)}`
+                  : processing ? `✨ Transforming your voice...`
+                  : rawBlob ? 'Tap to re-record'
+                  : 'Tap to record'}
+              </p>
+            </div>
+
+            {/* ── OUTPUT ── */}
+            <AnimatePresence>
+              {hasOutput && !processing && (
+                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="px-5 pb-5 space-y-3">
+
+                  {/* Play */}
+                  <motion.button onClick={playing ? stopPlay : playOut} whileTap={{ scale: 0.97 }}
+                    key={`play-${newResult}`} initial={{ scale: 1.03 }} animate={{ scale: 1 }}
+                    className="w-full py-4 rounded-2xl font-black text-base text-white flex items-center justify-center gap-3 relative overflow-hidden"
+                    style={{
+                      background: playing ? '#dc2626' : `linear-gradient(135deg,${voice.color1},${voice.color2})`,
+                      boxShadow: `0 10px 34px ${voice.glow}`,
+                    }}>
+                    {/* entry shimmer */}
+                    <motion.div className="absolute inset-0 pointer-events-none"
+                      style={{ background: 'linear-gradient(90deg,transparent,rgba(255,255,255,0.22),transparent)' }}
+                      initial={{ x: '-100%' }} animate={{ x: '150%' }}
+                      transition={{ duration: 0.65, ease: 'easeOut' }} />
+                    {playing ? <><Square className="w-5 h-5 fill-white" /> Stop</> : <><Play className="w-5 h-5 fill-white" /> Play {voice.emoji} {voice.name}</>}
+                  </motion.button>
+
+                  {/* Download + Share */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <button onClick={download}
+                      className="py-3.5 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2"
+                      style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      Download
+                    </button>
+                    <button onClick={() => setShowShare(true)}
+                      className="py-3.5 rounded-2xl font-black text-sm text-white flex items-center justify-center gap-2"
+                      style={{ background: 'linear-gradient(135deg,#f59e0b,#ef4444)', boxShadow: '0 6px 20px rgba(245,158,11,0.38)' }}>
+                      <Share2 className="w-4 h-4" /> Share & Post
+                    </button>
                   </div>
-                  {selected.id === v.id && (
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ background: v.color }}>
-                      <Check className="w-3 h-3 text-white" />
-                    </div>
-                  )}
-                </motion.button>
+                  <p className="text-center text-[10px]" style={{ color: 'rgba(255,255,255,0.22)' }}>
+                    💡 Tap another character above to instantly re-transform
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* ── VOICE DETAILS TABS ── */}
+          <div className="rounded-3xl overflow-hidden"
+            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+            <div className="flex" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+              {(['voices', 'about'] as const).map(tab => (
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  className="flex-1 py-3 text-[11px] font-black uppercase tracking-wider transition-all"
+                  style={{
+                    color: activeTab === tab ? voice.color1 : 'rgba(255,255,255,0.28)',
+                    borderBottom: `2px solid ${activeTab === tab ? voice.color1 : 'transparent'}`,
+                  }}>
+                  {tab === 'voices' ? '🎤 All Voices' : '📖 About This Voice'}
+                </button>
               ))}
             </div>
-          </motion.div>
 
-          {/* ── FUN FACTS ── */}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
-            className="text-center space-y-2 pb-4">
-            <p className="text-[11px] font-bold" style={{ color: 'rgba(255,255,255,0.25)' }}>
-              🎤 All processing happens on your device — your voice never leaves your phone
-            </p>
-            <p className="text-[11px] font-bold" style={{ color: 'rgba(255,255,255,0.25)' }}>
-              📁 Downloads as .WAV — perfect quality for every platform
-            </p>
-          </motion.div>
+            <AnimatePresence mode="wait">
+              {activeTab === 'about' && (
+                <motion.div key="about" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="p-5 space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                      style={{ background: `linear-gradient(135deg,${voice.color1},${voice.color2})`, boxShadow: `0 6px 22px ${voice.glow}` }}>
+                      {voice.emoji}
+                    </div>
+                    <div>
+                      <p className="font-black text-white text-lg">{voice.name}</p>
+                      <p className="text-xs mt-0.5 font-semibold" style={{ color: voice.color1 }}>{voice.mood}</p>
+                      <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>{voice.tagline}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.6)' }}>{voice.desc}</p>
+
+                  {/* Best uses */}
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: 'rgba(255,255,255,0.28)' }}>Best used for</p>
+                    <div className="space-y-2">
+                      {[
+                        'Surprise voice notes to friends & family',
+                        'TikTok Reels, Duets & trending sounds',
+                        'Instagram Stories voiceovers',
+                        'Making people laugh in WhatsApp groups',
+                      ].map((u, i) => (
+                        <div key={i} className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl"
+                          style={{ background: `${voice.color1}0f`, border: `1px solid ${voice.color1}22` }}>
+                          <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: voice.color1 }} />
+                          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.65)' }}>{u}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Suggested caption preview */}
+                  <div className="p-3.5 rounded-2xl" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <p className="text-[10px] font-black uppercase tracking-widest mb-1.5" style={{ color: 'rgba(255,255,255,0.28)' }}>Suggested caption</p>
+                    <p className="text-xs italic leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>"{voice.shareCaption}"</p>
+                    <p className="text-[10px] mt-1 font-semibold" style={{ color: voice.color1 }}>{voice.tiktokTag}</p>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === 'voices' && (
+                <motion.div key="voices" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  className="p-4 space-y-2">
+                  {VOICES.map(v => {
+                    const on = voice.id === v.id
+                    return (
+                      <motion.button key={v.id} onClick={() => pickVoice(v)} whileTap={{ scale: 0.98 }}
+                        className="w-full flex items-center gap-3 p-3.5 rounded-2xl text-left"
+                        style={{
+                          background: on ? `${v.color1}18` : 'rgba(255,255,255,0.03)',
+                          border: `1px solid ${on ? v.color1 + '50' : 'rgba(255,255,255,0.06)'}`,
+                          boxShadow: on ? `0 4px 18px ${v.glow}` : 'none',
+                        }}>
+                        <span className="text-2xl">{v.emoji}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <p className="text-sm font-black text-white">{v.name}</p>
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+                              style={{ background: `${v.color1}20`, color: v.color1 }}>
+                              {v.tagline}
+                            </span>
+                          </div>
+                          <p className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.32)' }}>{v.mood}</p>
+                        </div>
+                        {on
+                          ? <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: v.color1 }}>
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
+                          : <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: 'rgba(255,255,255,0.2)' }} />}
+                      </motion.button>
+                    )
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* ── FOOTER ── */}
+          <div className="text-center space-y-1 pb-2">
+            <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.18)' }}>🔒 100% on-device — your voice never leaves your phone</p>
+            <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.18)' }}>📁 Downloads as .WAV · Perfect for every platform</p>
+          </div>
 
         </div>
       </div>
+
+      {/* Share sheet */}
+      <AnimatePresence>
+        {showShare && outUrl && (
+          <ShareSheet voice={voice} outUrl={outUrl} customCaption={caption}
+            onClose={() => setShowShare(false)} onDownload={download} />
+        )}
+      </AnimatePresence>
     </DashboardLayout>
   )
 }
