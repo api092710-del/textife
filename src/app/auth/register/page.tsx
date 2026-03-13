@@ -11,22 +11,26 @@ function RegisterForm() {
   const params = useSearchParams()
   const plan   = params.get('plan') || 'free'
 
-  const [loading, setLoading] = useState(false)
-  const [showPw, setShowPw]   = useState(false)
-  const [form, setForm]       = useState({ fullName: '', username: '', email: '', dateOfBirth: '', password: '', confirmPassword: '', terms: false })
-  const [errors, setErrors]   = useState<Record<string, string>>({})
-
-  const set = (k: string, v: string | boolean) => { setForm(f => ({ ...f, [k]: v })); setErrors(e => ({ ...e, [k]: '' })) }
+  const [loading, setLoading]   = useState(false)
+  const [showPw, setShowPw]     = useState(false)
+  const [fullName, setFullName] = useState('')
+  const [username, setUsername] = useState('')
+  const [email, setEmail]       = useState('')
+  const [dob, setDob]           = useState('')
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm]   = useState('')
+  const [terms, setTerms]       = useState(false)
+  const [errors, setErrors]     = useState<Record<string, string>>({})
 
   const validate = () => {
     const e: Record<string, string> = {}
-    if (!form.fullName.trim())             e.fullName        = 'Full name required'
-    if (form.username.length < 3)          e.username        = 'Min 3 characters'
-    if (!/\S+@\S+\.\S+/.test(form.email)) e.email           = 'Valid email required'
-    if (!form.dateOfBirth)                 e.dateOfBirth     = 'Date of birth required'
-    if (form.password.length < 8)          e.password        = 'Min 8 characters'
-    if (form.password !== form.confirmPassword) e.confirmPassword = 'Passwords do not match'
-    if (!form.terms)                       e.terms           = 'You must agree to terms'
+    if (!fullName.trim())               e.fullName = 'Full name required'
+    if (username.length < 3)            e.username = 'Min 3 characters'
+    if (!/\S+@\S+\.\S+/.test(email))   e.email    = 'Valid email required'
+    if (!dob)                           e.dob      = 'Date of birth required'
+    if (password.length < 8)            e.password = 'Min 8 characters'
+    if (password !== confirm)           e.confirm  = 'Passwords do not match'
+    if (!terms)                         e.terms    = 'You must agree to terms'
     setErrors(e)
     return !Object.keys(e).length
   }
@@ -36,7 +40,11 @@ function RegisterForm() {
     if (!validate()) return
     setLoading(true)
     try {
-      const res  = await fetch('/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...form, plan }) })
+      const res  = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullName, username, email, dateOfBirth: dob, password, confirmPassword: confirm, plan }),
+      })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       localStorage.setItem('token', data.token)
@@ -49,20 +57,6 @@ function RegisterForm() {
       setLoading(false)
     }
   }
-
-  const Field = ({ name, label, type = 'text', placeholder }: { name: string; label: string; type?: string; placeholder: string }) => (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1.5">{label}</label>
-      <input
-        type={type}
-        className={`input-field ${errors[name] ? 'error' : ''}`}
-        placeholder={placeholder}
-        value={String((form as Record<string, unknown>)[name] ?? '')}
-        onChange={e => set(name, e.target.value)}
-      />
-      {errors[name] && <p className="text-red-500 text-xs mt-1">{errors[name]}</p>}
-    </div>
-  )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 flex items-center justify-center p-4">
@@ -88,13 +82,58 @@ function RegisterForm() {
           </div>
 
           <form onSubmit={submit} className="space-y-4">
+            {/* Full Name + Username */}
             <div className="grid grid-cols-2 gap-3">
-              <Field name="fullName" label="Full Name *" placeholder="John Doe" />
-              <Field name="username" label="Username *"  placeholder="johndoe" />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name *</label>
+                <input
+                  type="text"
+                  className={`input-field ${errors.fullName ? 'error' : ''}`}
+                  placeholder="John Doe"
+                  value={fullName}
+                  onChange={e => { setFullName(e.target.value); setErrors(v => ({ ...v, fullName: '' })) }}
+                />
+                {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Username *</label>
+                <input
+                  type="text"
+                  className={`input-field ${errors.username ? 'error' : ''}`}
+                  placeholder="johndoe"
+                  value={username}
+                  onChange={e => { setUsername(e.target.value); setErrors(v => ({ ...v, username: '' })) }}
+                />
+                {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
+              </div>
             </div>
-            <Field name="email"       label="Email Address *" type="email" placeholder="you@example.com" />
-            <Field name="dateOfBirth" label="Date of Birth *" type="date"  placeholder="" />
 
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email Address *</label>
+              <input
+                type="email"
+                className={`input-field ${errors.email ? 'error' : ''}`}
+                placeholder="you@example.com"
+                value={email}
+                onChange={e => { setEmail(e.target.value); setErrors(v => ({ ...v, email: '' })) }}
+              />
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+            </div>
+
+            {/* Date of Birth */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Date of Birth *</label>
+              <input
+                type="date"
+                className={`input-field ${errors.dob ? 'error' : ''}`}
+                value={dob}
+                onChange={e => { setDob(e.target.value); setErrors(v => ({ ...v, dob: '' })) }}
+              />
+              {errors.dob && <p className="text-red-500 text-xs mt-1">{errors.dob}</p>}
+            </div>
+
+            {/* Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Password *</label>
               <div className="relative">
@@ -102,8 +141,8 @@ function RegisterForm() {
                   type={showPw ? 'text' : 'password'}
                   className={`input-field pr-11 ${errors.password ? 'error' : ''}`}
                   placeholder="Min. 8 characters"
-                  value={form.password}
-                  onChange={e => set('password', e.target.value)}
+                  value={password}
+                  onChange={e => { setPassword(e.target.value); setErrors(v => ({ ...v, password: '' })) }}
                 />
                 <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400">
                   {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -112,21 +151,23 @@ function RegisterForm() {
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             </div>
 
+            {/* Confirm Password */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Confirm Password *</label>
               <input
                 type="password"
-                className={`input-field ${errors.confirmPassword ? 'error' : ''}`}
+                className={`input-field ${errors.confirm ? 'error' : ''}`}
                 placeholder="Repeat your password"
-                value={form.confirmPassword}
-                onChange={e => set('confirmPassword', e.target.value)}
+                value={confirm}
+                onChange={e => { setConfirm(e.target.value); setErrors(v => ({ ...v, confirm: '' })) }}
               />
-              {errors.confirmPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+              {errors.confirm && <p className="text-red-500 text-xs mt-1">{errors.confirm}</p>}
             </div>
 
+            {/* Terms */}
             <div>
-              <button type="button" onClick={() => set('terms', !form.terms)} className="flex items-start gap-3 text-left w-full">
-                {form.terms
+              <button type="button" onClick={() => { setTerms(!terms); setErrors(v => ({ ...v, terms: '' })) }} className="flex items-start gap-3 text-left w-full">
+                {terms
                   ? <CheckSquare className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
                   : <Square className="w-5 h-5 text-gray-300 flex-shrink-0 mt-0.5" />}
                 <span className="text-sm text-gray-600">
