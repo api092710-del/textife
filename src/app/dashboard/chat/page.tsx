@@ -44,7 +44,7 @@ function MsgBubble({ msg }: { msg: Msg }) {
 
 export default function ChatPage() {
   const { user, loading, logout } = useAuth()
-  const [messages, setMessages]   = useState<Msg[]>([{ id: '0', role: 'assistant', content: "Hi! I'm your Trendygene AI Business Assistant powered by OpenAI. I can help you with:\n\n• WhatsApp automation strategies\n• Lead generation techniques\n• Marketing campaigns & copywriting\n• Business growth recommendations\n• Tool and workflow suggestions\n\nWhat would you like to work on today? 🚀", ts: new Date() }])
+  const [messages, setMessages]   = useState<Msg[]>([{ id: '0', role: 'assistant', content: "Hi! I'm your Textife AI Business Assistant powered by OpenAI. I can help you with:\n\n• WhatsApp automation strategies\n• Lead generation techniques\n• Marketing campaigns & copywriting\n• Business growth recommendations\n• Tool and workflow suggestions\n\nWhat would you like to work on today? 🚀", ts: new Date() }])
   const [input, setInput]         = useState('')
   const [busy, setBusy]           = useState(false)
   const [sessionId, setSessionId] = useState<string | null>(null)

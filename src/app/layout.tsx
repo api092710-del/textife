@@ -3,12 +3,12 @@ import '../styles/globals.css'
 import { Toaster } from 'react-hot-toast'
 
 export const metadata: Metadata = {
-  title: { default: 'Trendygene – AI WhatsApp Business Automation', template: '%s | Trendygene' },
+  title: { default: 'Textife – AI WhatsApp Business Automation', template: '%s | Textife' },
   description: 'Automate your WhatsApp business with AI. Reply instantly, capture leads, and grow revenue 24/7.',
   keywords: ['WhatsApp AI', 'business automation', 'AI chatbot', 'lead capture', 'WhatsApp bot'],
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   openGraph: {
-    title: 'Trendygene – AI WhatsApp Business Automation',
+    title: 'Textife – AI WhatsApp Business Automation',
     description: 'Turn WhatsApp into your 24/7 AI sales & support assistant.',
     type: 'website',
   },

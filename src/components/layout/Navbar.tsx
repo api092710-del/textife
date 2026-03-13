@@ -26,7 +26,7 @@ export default function Navbar() {
             <Zap className="w-4 h-4 text-white fill-white" />
           </div>
           <span className="font-display font-bold text-xl text-gray-900">
-            Trendy<span className="text-primary-600">gene</span>
+            Texti<span className="text-primary-600">fe</span>
           </span>
         </Link>
 

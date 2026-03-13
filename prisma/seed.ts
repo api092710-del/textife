@@ -10,12 +10,12 @@ async function main() {
   // Create admin user
   const adminPassword = await bcrypt.hash('Admin@123456', 12)
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@trendygene.com' },
+    where: { email: 'admin@textife.com' },
     update: {},
     create: {
       fullName: 'Admin User',
       username: 'admin',
-      email: 'admin@trendygene.com',
+      email: 'admin@textife.com',
       password: adminPassword,
       role: 'ADMIN',
       plan: 'BUSINESS',
@@ -26,12 +26,12 @@ async function main() {
   // Create demo user
   const demoPassword = await bcrypt.hash('Demo@123456', 12)
   const demo = await prisma.user.upsert({
-    where: { email: 'demo@trendygene.com' },
+    where: { email: 'demo@textife.com' },
     update: {},
     create: {
       fullName: 'Demo User',
       username: 'demouser',
-      email: 'demo@trendygene.com',
+      email: 'demo@textife.com',
       password: demoPassword,
       role: 'USER',
       plan: 'PRO',
@@ -84,8 +84,8 @@ async function main() {
   console.log('✅ Templates seeded')
 
   console.log('\n🎉 Seed complete!')
-  console.log('📧 Admin login: admin@trendygene.com / Admin@123456')
-  console.log('📧 Demo login:  demo@trendygene.com  / Demo@123456')
+  console.log('📧 Admin login: admin@textife.com / Admin@123456')
+  console.log('📧 Demo login:  demo@textife.com  / Demo@123456')
 }
 
 main()

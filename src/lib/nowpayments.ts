@@ -25,7 +25,7 @@ export async function createCryptoInvoice(params: {
       price_amount: params.amount,
       price_currency: 'usd',
       order_id: orderId,
-      order_description: `Trendygene ${params.plan} Plan`,
+      order_description: `Textife ${params.plan} Plan`,
       ipn_callback_url: `${params.returnBaseUrl}/api/payments/nowpayments/webhook`,
       success_url: `${params.returnBaseUrl}/dashboard?upgraded=1`,
       cancel_url:  `${params.returnBaseUrl}/dashboard/billing?cancelled=1`,

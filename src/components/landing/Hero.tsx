@@ -30,7 +30,7 @@ export default function Hero() {
             </h1>
 
             <p className="text-lg lg:text-xl text-gray-500 leading-relaxed mb-8 max-w-lg">
-              Trendygene turns your WhatsApp into a 24/7 AI assistant that replies instantly, captures leads, and grows your business automatically.
+              Textife turns your WhatsApp into a 24/7 AI assistant that replies instantly, captures leads, and grows your business automatically.
             </p>
 
             <div className="flex flex-wrap gap-3 mb-10">
@@ -81,7 +81,7 @@ export default function Hero() {
                 <div className="bg-primary-600 px-4 py-3 flex items-center gap-3">
                   <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-white text-sm font-bold">T</div>
                   <div>
-                    <p className="text-white text-sm font-semibold">Trendygene AI</p>
+                    <p className="text-white text-sm font-semibold">Textife AI</p>
                     <p className="text-primary-200 text-xs flex items-center gap-1">
                       <span className="w-1.5 h-1.5 bg-green-400 rounded-full inline-block" />
                       Online

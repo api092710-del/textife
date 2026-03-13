@@ -41,7 +41,7 @@ export default function LoginPage() {
               <div className="w-9 h-9 bg-primary-600 rounded-xl flex items-center justify-center shadow-button">
                 <Zap className="w-4.5 h-4.5 text-white fill-white" />
               </div>
-              <span className="font-display font-bold text-xl text-gray-900">Trendy<span className="text-primary-600">gene</span></span>
+              <span className="font-display font-bold text-xl text-gray-900">Texti<span className="text-primary-600">fe</span></span>
             </Link>
             <h1 className="font-display font-bold text-2xl text-gray-900">Welcome back</h1>
             <p className="text-gray-500 text-sm mt-1">Sign in to your account</p>

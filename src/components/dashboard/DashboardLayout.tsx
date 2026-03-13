@@ -27,7 +27,7 @@ export default function DashboardLayout({ children, user, onLogout }: { children
       {/* Logo */}
       <div className="px-4 py-5 border-b border-gray-100 flex items-center gap-2.5">
         <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center"><Zap className="w-4 h-4 text-white fill-white" /></div>
-        <span className="font-display font-bold text-lg text-gray-900">Trendy<span className="text-primary-600">gene</span></span>
+        <span className="font-display font-bold text-lg text-gray-900">Texti<span className="text-primary-600">fe</span></span>
       </div>
 
       {/* User */}
@@ -102,7 +102,7 @@ export default function DashboardLayout({ children, user, onLogout }: { children
           <button onClick={() => setOpen(true)} className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg"><Menu className="w-5 h-5" /></button>
           <Link href="/dashboard" className="flex items-center gap-1.5">
             <div className="w-6 h-6 bg-primary-600 rounded-md flex items-center justify-center"><Zap className="w-3.5 h-3.5 text-white fill-white" /></div>
-            <span className="font-display font-bold text-gray-900">Trendygene</span>
+            <span className="font-display font-bold text-gray-900">Textife</span>
           </Link>
           <div className="w-9" />
         </div>

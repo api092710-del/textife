@@ -40,10 +40,10 @@ export async function createPayPalOrder(plan: string, amount: number, returnBase
       purchase_units: [{
         reference_id: plan,
         amount: { currency_code: 'USD', value: amount.toFixed(2) },
-        description: `Trendygene ${plan} Plan - Monthly Subscription`,
+        description: `Textife ${plan} Plan - Monthly Subscription`,
       }],
       application_context: {
-        brand_name: 'Trendygene',
+        brand_name: 'Textife',
         return_url: `${returnBaseUrl}/api/payments/paypal/success`,
         cancel_url:  `${returnBaseUrl}/dashboard/billing?cancelled=1`,
         user_action: 'PAY_NOW',

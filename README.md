@@ -1,4 +1,4 @@
-# Trendygene — Production-Ready AI WhatsApp Business SaaS
+# Textife — Production-Ready AI WhatsApp Business SaaS
 
 **Stack:** Next.js 14 · PostgreSQL (Supabase) · Prisma · OpenAI · PayPal · NOWPayments · Vercel
 
@@ -64,8 +64,8 @@ npm run db:seed      # seeds admin + demo user + templates
 **Test accounts after seeding:**
 | Account | Email | Password |
 |---------|-------|----------|
-| Admin | admin@trendygene.com | Admin@123456 |
-| Demo (Pro) | demo@trendygene.com | Demo@123456 |
+| Admin | admin@textife.com | Admin@123456 |
+| Demo (Pro) | demo@textife.com | Demo@123456 |
 
 ### Step 4 — Deploy to Vercel
 
@@ -84,16 +84,16 @@ Or connect GitHub:
 
 ### Step 5 — Payment Webhook URLs
 
-After getting your Vercel URL (e.g. `https://trendygene.vercel.app`):
+After getting your Vercel URL (e.g. `https://textife.vercel.app`):
 
 **PayPal:**
 - Go to developer.paypal.com → Your App → Edit
-- Return URL: `https://trendygene.vercel.app/api/payments/paypal/success`
-- Cancel URL: `https://trendygene.vercel.app/dashboard/billing?cancelled=1`
+- Return URL: `https://textife.vercel.app/api/payments/paypal/success`
+- Cancel URL: `https://textife.vercel.app/dashboard/billing?cancelled=1`
 
 **NOWPayments:**
 - Go to nowpayments.io → Store Settings → IPN Settings
-- IPN Callback URL: `https://trendygene.vercel.app/api/payments/nowpayments/webhook`
+- IPN Callback URL: `https://textife.vercel.app/api/payments/nowpayments/webhook`
 
 ---
 
@@ -107,7 +107,7 @@ After getting your Vercel URL (e.g. `https://trendygene.vercel.app`):
 
 ### PayPal
 1. https://developer.paypal.com → Log in
-2. "Apps & Credentials" → "Create App" → name it Trendygene
+2. "Apps & Credentials" → "Create App" → name it Textife
 3. Copy **Client ID** and **Secret Key**
 4. For sandbox testing: use as-is
 5. For live: switch to "Live" tab credentials + set `PAYPAL_MODE=live`
@@ -127,7 +127,7 @@ After getting your Vercel URL (e.g. `https://trendygene.vercel.app`):
 - [ ] Set `NEXT_PUBLIC_APP_URL` to your real domain
 - [ ] Verify NOWPayments webhook URL is correct
 - [ ] Verify PayPal return URL is correct
-- [ ] Make your admin account: `admin@trendygene.com`
+- [ ] Make your admin account: `admin@textife.com`
 
 ---
 
@@ -167,13 +167,13 @@ npm run build
 
 # With PM2
 npm i -g pm2
-pm2 start npm --name trendygene -- start
+pm2 start npm --name textife -- start
 pm2 save && pm2 startup
 
 # Nginx config
 server {
     listen 80;
-    server_name trendygene.com;
+    server_name textife.com;
     location / { proxy_pass http://localhost:3000; }
 }
 ```

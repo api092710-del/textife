@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 import { requireAuth, ApiError } from '@/lib/auth'
 import { ok, err, handleError, LIMITS } from '@/lib/response'
 
-const SYSTEM = `You are Trendygene AI, an expert business growth assistant. You specialize in:
+const SYSTEM = `You are Textife AI, an expert business growth assistant. You specialize in:
 
 1. **WhatsApp Business Automation** – bot setup, reply flows, lead capture sequences
 2. **Lead Generation** – strategies, funnels, qualification scripts

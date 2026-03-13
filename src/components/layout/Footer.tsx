@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="col-span-2">
             <Link href="/" className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center"><Zap className="w-4 h-4 text-white fill-white" /></div>
-              <span className="font-display font-bold text-white text-lg">Trendy<span className="text-primary-400">gene</span></span>
+              <span className="font-display font-bold text-white text-lg">Texti<span className="text-primary-400">fe</span></span>
             </Link>
             <p className="text-sm leading-relaxed max-w-52">The AI-powered WhatsApp automation platform for modern businesses.</p>
           </div>
@@ -27,7 +27,7 @@ export default function Footer() {
           ))}
         </div>
         <div className="border-t border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm">
-          <p>© {new Date().getFullYear()} Trendygene. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Textife. All rights reserved.</p>
           <div className="flex items-center gap-5">
             <span>🔒 SSL Secured</span><span>GDPR Compliant</span><span>🌍 Global</span>
           </div>

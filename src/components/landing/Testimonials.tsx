@@ -4,11 +4,11 @@ import { motion } from 'framer-motion'
 import { Star } from 'lucide-react'
 
 const testimonials = [
-  { name: 'Ahmed Al-Rashid',    role: 'E-commerce Owner, Dubai',           text: 'Trendygene saved us 40 hours/week on support. Response time went from hours to seconds!',              metric: '+340% leads',       avatar: 'AR' },
+  { name: 'Ahmed Al-Rashid',    role: 'E-commerce Owner, Dubai',           text: 'Textife saved us 40 hours/week on support. Response time went from hours to seconds!',              metric: '+340% leads',       avatar: 'AR' },
   { name: 'Priya Sharma',       role: 'Marketing Director, Bangalore',      text: 'AI replies are so natural, customers don\'t realize they\'re chatting with a bot. Incredible!',          metric: '2x revenue',        avatar: 'PS' },
   { name: 'Carlos Mendez',      role: 'Restaurant Chain Owner, Mexico',     text: 'We manage 5 locations with 3 bots. All orders, reservations, and inquiries are automated.',              metric: '98% satisfaction',  avatar: 'CM' },
   { name: 'Sarah Chen',         role: 'SaaS Founder, Singapore',            text: 'Best investment for our startup. Lead capture feature alone paid for itself 10x in the first month.',    metric: '$50K saved',        avatar: 'SC' },
-  { name: 'Mohammed Farhan',    role: 'Real Estate Agent, Sharjah',         text: 'I used to miss leads while sleeping. Now Trendygene captures every inquiry 24/7.',                       metric: '+180% conversions', avatar: 'MF' },
+  { name: 'Mohammed Farhan',    role: 'Real Estate Agent, Sharjah',         text: 'I used to miss leads while sleeping. Now Textife captures every inquiry 24/7.',                       metric: '+180% conversions', avatar: 'MF' },
   { name: 'Jessica Williams',   role: 'Boutique Owner, London',             text: 'Setup was incredibly easy. Within an hour my AI bot was handling questions better than expected.',         metric: '10hr/week saved',   avatar: 'JW' },
 ]
 
@@ -19,7 +19,7 @@ export default function Testimonials() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-14">
           <span className="badge badge-blue mb-4">Testimonials</span>
           <h2 className="font-display font-extrabold text-4xl lg:text-5xl text-gray-900 mb-4">Loved by businesses worldwide</h2>
-          <p className="text-xl text-gray-500">Join 12,500+ businesses already growing with Trendygene</p>
+          <p className="text-xl text-gray-500">Join 12,500+ businesses already growing with Textife</p>
         </motion.div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {testimonials.map((t, i) => (
