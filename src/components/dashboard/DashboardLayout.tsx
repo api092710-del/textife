@@ -22,6 +22,7 @@ const NAV_GROUPS = [
       { label: 'Personal Growth', href: '/dashboard/growth',      emoji: '🌱' },
       { label: 'Quick Tools',     href: '/dashboard/quicktools',  emoji: '⚡' },
       { label: 'Prompt Library',  href: '/dashboard/prompts',     emoji: '📚' },
+      { label: 'Voice Changer',   href: '/dashboard/voicechanger', emoji: '🎙️' },
     ]
   },
   {
