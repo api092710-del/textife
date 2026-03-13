@@ -1,4 +1,3 @@
-// src/app/api/auth/register/route.ts
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
@@ -22,14 +21,18 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const data = schema.parse(body)
 
-    // Check duplicates
-    const [emailExists, usernameExists] = await Promise.all([
-      prisma.user.findUnique({ where: { email: data.email.toLowerCase() } }),
-      prisma.user.findUnique({ where: { username: data.username.toLowerCase() } }),
+    // Check duplicates - use raw queries to bypass RLS
+    const [emailCheck, usernameCheck] = await Promise.all([
+      prisma.$queryRaw`SELECT id FROM users WHERE email = ${data.email.toLowerCase()} LIMIT 1`,
+      prisma.$queryRaw`SELECT id FROM users WHERE username = ${data.username.toLowerCase()} LIMIT 1`,
     ])
-    if (emailExists)    return err('Email already registered', 409)
-    if (usernameExists) return err('Username already taken', 409)
 
+    if (Array.isArray(emailCheck) && emailCheck.length > 0) 
+      return err('Email already registered', 409)
+    if (Array.isArray(usernameCheck) && usernameCheck.length > 0) 
+      return err('Username already taken', 409)
+
+    // Create user (this works without RLS)
     const user = await prisma.user.create({
       data: {
         fullName:    data.fullName.trim(),
@@ -42,6 +45,20 @@ export async function POST(req: NextRequest) {
       },
       select: { id: true, fullName: true, username: true, email: true, role: true, plan: true, createdAt: true },
     })
+
+    // ADD THIS: Set RLS context after user creation
+    await prisma.$executeRaw`SELECT set_config('app.user_id', ${user.id}, TRUE)`;
+
+    // OPTIONAL: Create initial analytics record
+    await prisma.analytics.create({
+      data: {
+        userId: user.id,
+        messagesHandled: 0,
+        leadsCaptures: 0,
+        revenueEst: 0,
+        apiCalls: 0
+      }
+    }).catch(err => console.error('Failed to create analytics:', err));
 
     const token = signToken({ userId: user.id, email: user.email, role: user.role, plan: user.plan })
     return ok({ token, user }, 201)

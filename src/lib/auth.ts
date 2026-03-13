@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { NextRequest } from 'next/server'
+import { prisma } from './prisma'
 
 const SECRET = process.env.JWT_SECRET!
 if (!SECRET) console.warn('⚠️  JWT_SECRET not set – set it in .env')
@@ -51,18 +52,40 @@ export class ApiError extends Error {
   }
 }
 
-// ─── getUserFromRequest: fetch full user from DB via JWT ───────────────────
-import { prisma } from './prisma'
+// ─── NEW: Set RLS context for the current request ───────────────────
+export async function setRLSContext(userId: string) {
+  try {
+    await prisma.$executeRaw`SELECT set_config('app.user_id', ${userId}, TRUE)`
+  } catch (error) {
+    console.error('Failed to set RLS context:', error)
+  }
+}
 
+// ─── getUserFromRequest: fetch full user from DB via JWT ───────────────────
 export async function getUserFromRequest(req: NextRequest) {
   try {
     const auth = getAuth(req)
     if (!auth) return null
+    
+    // SET RLS CONTEXT before querying
+    await setRLSContext(auth.userId)
+    
     const user = await prisma.user.findUnique({
       where: { id: auth.userId },
       select: { id: true, fullName: true, email: true, plan: true, role: true, isBanned: true, createdAt: true },
     })
+    
     if (!user || user.isBanned) return null
     return user
   } catch { return null }
+}
+
+// ─── Helper for API routes to set RLS context ───────────────────
+export async function withRLS<T>(
+  req: NextRequest,
+  fn: (userId: string) => Promise<T>
+): Promise<T> {
+  const auth = requireAuth(req)
+  await setRLSContext(auth.userId)
+  return fn(auth.userId)
 }

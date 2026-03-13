@@ -1,16 +1,15 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAuth } from '@/lib/auth'
+import { requireAuth, setRLSContext } from '@/lib/auth'
 import { ok, handleError } from '@/lib/response'
 
 export async function GET(req: NextRequest) {
   try {
     const auth = requireAuth(req)
     
-    // ADD THIS: Set RLS context with the user ID from the token
-    await prisma.$executeRaw`SELECT set_config('app.user_id', ${auth.userId}, TRUE)`;
+    // Set RLS context
+    await setRLSContext(auth.userId)
     
-    // Now this query will work with RLS
     const user = await prisma.user.findUnique({
       where: { id: auth.userId },
       select: { id: true, fullName: true, username: true, email: true, role: true, plan: true, createdAt: true, isBanned: true },
