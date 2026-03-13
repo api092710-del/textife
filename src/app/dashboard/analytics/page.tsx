@@ -177,6 +177,7 @@ export default function AnalyticsPage() {
         {/* Bots performance */}
         {data?.bots?.length > 0 && (
           <div className="card overflow-hidden">
+            <div className="overflow-x-auto">
             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
               <h3 className="font-display font-bold text-gray-900">Bot Performance</h3>
               <span className="text-xs text-gray-400">{data.bots.length} bot{data.bots.length !== 1 ? 's' : ''}</span>
@@ -203,6 +204,7 @@ export default function AnalyticsPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </div>

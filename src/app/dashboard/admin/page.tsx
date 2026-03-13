@@ -55,14 +55,14 @@ export default function AdminPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((s, i) => (
             <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }} className="card p-5">
-              <div className="font-display font-bold text-3xl text-gray-900 mb-1">{s.val}</div>
+              <div className="font-display font-bold text-2xl md:text-3xl text-gray-900 mb-1">{s.val}</div>
               <div className="text-sm text-gray-500">{s.label}</div>
             </motion.div>
           ))}
         </div>
 
         {/* Users table */}
-        <div className="card overflow-hidden">
+        <div className="card overflow-hidden"><div className="overflow-x-auto">
           <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
             <h2 className="font-display font-bold text-gray-900">All Users</h2>
             <div className="relative">
@@ -122,6 +122,7 @@ export default function AdminPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       </div>

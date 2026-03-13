@@ -107,7 +107,7 @@ export default function AchievementsPage() {
         </motion.div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2">
           {[
             { label: 'Current Streak', val: `${streak?.streak || 0} 🔥`, color: 'text-orange-600' },
             { label: 'Total XP', val: `${xp} ⚡`, color: 'text-purple-600' },

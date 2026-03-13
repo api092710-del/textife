@@ -132,7 +132,7 @@ export default function BotsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                   <div className="bg-gray-50 rounded-xl p-3 text-center">
                     <MessageSquare className="w-4 h-4 text-primary-500 mx-auto mb-1" />
                     <p className="font-bold text-gray-900">{bot.totalReplies.toLocaleString()}</p>

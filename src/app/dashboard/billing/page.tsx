@@ -49,7 +49,7 @@ export default function BillingPage() {
         </div>
 
         {/* Current plan */}
-        <div className="bg-gradient-to-r from-primary-50 to-blue-50 rounded-2xl p-5 border border-primary-100 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-primary-50 to-blue-50 rounded-2xl p-4 border border-primary-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center shadow-button">
               <Crown className="w-6 h-6 text-white" />
@@ -64,7 +64,7 @@ export default function BillingPage() {
         {/* Payment method */}
         <div>
           <p className="text-sm font-semibold text-gray-700 mb-3">Choose Payment Method</p>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             {(['PAYPAL', 'NOWPAYMENTS'] as const).map(p => (
               <button key={p} onClick={() => setProvider(p)}
                 className={`flex items-center gap-2 px-5 py-3 rounded-xl border-2 text-sm font-semibold transition-all ${
@@ -100,7 +100,7 @@ export default function BillingPage() {
 
                 <h3 className="font-display font-bold text-lg text-gray-900 mb-1">{plan.name}</h3>
                 <div className="mb-5">
-                  <span className="font-display font-extrabold text-4xl text-gray-900">{plan.price === 0 ? 'Free' : `$${plan.price}`}</span>
+                  <span className="font-display font-extrabold text-3xl md:text-4xl text-gray-900">{plan.price === 0 ? 'Free' : `$${plan.price}`}</span>
                   {plan.price > 0 && <span className="text-gray-400 text-sm">/month</span>}
                 </div>
 

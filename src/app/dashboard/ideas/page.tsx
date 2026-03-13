@@ -46,7 +46,7 @@ export default function IdeasPage() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2 md:gap-3">
           {TYPES.map(t => (
             <button key={t.id} onClick={() => setType(t.id)}
               className={`p-3 md:p-4 rounded-2xl border-2 text-left transition-all ${type === t.id ? 'border-primary-400 bg-primary-50' : 'border-gray-100 bg-white hover:border-gray-200'}`}>

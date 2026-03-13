@@ -44,7 +44,7 @@ export default function ReferralPage() {
               <p className="text-indigo-200 text-sm">For every friend who upgrades to Pro</p>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-3 mb-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
             {[
               { label: 'You Invite', icon: '📨', desc: 'Share your link' },
               { label: 'They Sign Up', icon: '✅', desc: 'Friend joins free' },
@@ -60,7 +60,7 @@ export default function ReferralPage() {
         </motion.div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {[
             { label: 'Friends Referred', val: data?.referrals ?? 0, icon: Users, color: 'text-blue-600' },
             { label: 'Months Earned', val: data?.earnings ?? 0, icon: DollarSign, color: 'text-green-600' },

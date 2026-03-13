@@ -108,7 +108,7 @@ export default function TemplatesPage() {
                 <button onClick={() => setModal(false)} className="p-1.5 hover:bg-gray-100 rounded-lg"><X className="w-4 h-4 text-gray-500" /></button>
               </div>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Title *</label>
                     <input className="input-field" placeholder="Template name" value={form.title} onChange={e => setForm({...form, title: e.target.value})} />

@@ -50,7 +50,7 @@ export default function LeadsPage() {
         </div>
 
         {/* Summary cards */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[
             { label: 'Total Leads', val: data?.total ?? 0, icon: Users, color: 'bg-green-50 text-green-600' },
             { label: 'Active Bots', val: leads.filter((l: any) => l.status === 'ACTIVE').length, icon: Bot, color: 'bg-blue-50 text-blue-600' },
@@ -81,7 +81,7 @@ export default function LeadsPage() {
         </div>
 
         {/* Table */}
-        <div className="card overflow-hidden">
+        <div className="card overflow-hidden"><div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
@@ -115,6 +115,7 @@ export default function LeadsPage() {
               ))}
             </tbody>
           </table>
+        </div>
         </div>
 
         {/* Export tip */}

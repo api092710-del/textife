@@ -1,4 +1,3 @@
-// src/app/api/chat/route.ts
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth, ApiError } from '@/lib/auth'
@@ -35,28 +34,27 @@ export async function POST(req: NextRequest) {
 
     await prisma.chatMessage.create({ data: { sessionId: session.id, role: 'user', content: message } })
 
-    if (!process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY.includes('YOUR_')) {
-      const fallback = `⚠️ Anthropic API key not configured. Add ANTHROPIC_API_KEY to your Vercel environment variables. Get your key at: console.anthropic.com`
+    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY.includes('YOUR_')) {
+      const fallback = `⚠️ OpenAI API key not configured. Add OPENAI_API_KEY to your Vercel environment variables.`
       await prisma.chatMessage.create({ data: { sessionId: session.id, role: 'assistant', content: fallback } })
       return ok({ reply: fallback, sessionId: session.id, usedReplies: used + 1, limit })
     }
 
     const messages = [
+      { role: 'system', content: SYSTEM },
       ...history.map(m => ({ role: m.role as 'user' | 'assistant', content: m.content })),
-      { role: 'user' as const, content: message },
+      { role: 'user', content: message },
     ]
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY!,
-        'anthropic-version': '2023-06-01',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'gpt-4o-mini',
         max_tokens: 1200,
-        system: SYSTEM,
         messages,
       }),
     })
@@ -64,8 +62,8 @@ export async function POST(req: NextRequest) {
     const data = await response.json()
     if (!response.ok) throw new Error(data.error?.message || 'AI request failed')
 
-    const reply = data.content?.[0]?.text || 'No response generated. Please try again.'
-    const tokens = (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0)
+    const reply = data.choices?.[0]?.message?.content || 'No response generated.'
+    const tokens = data.usage?.total_tokens || 0
 
     await prisma.chatMessage.create({ data: { sessionId: session.id, role: 'assistant', content: reply, tokens } })
 

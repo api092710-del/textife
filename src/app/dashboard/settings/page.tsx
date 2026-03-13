@@ -82,7 +82,7 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Full Name</label>
                   <input className="input-field" value={profile.fullName} onChange={e => setProfile({...profile, fullName: e.target.value})} />
@@ -156,7 +156,7 @@ export default function SettingsPage() {
                 <span className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all duration-200 ${dark ? 'left-7' : 'left-1'}`} />
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {['Compact', 'Comfortable'].map(size => (
                 <button key={size} className={`p-4 rounded-xl border-2 text-sm font-medium transition-all ${size === 'Comfortable' ? 'border-primary-400 bg-primary-50 text-primary-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}>
                   {size} View
@@ -203,7 +203,7 @@ export default function SettingsPage() {
               ⚠️ API keys are stored in your server's <code className="font-mono bg-amber-100 px-1 rounded">.env</code> file. Update them in Vercel → Environment Variables.
             </div>
             {[
-              { label: 'Anthropic API Key', key: 'ANTHROPIC_API_KEY', desc: 'Powers ALL AI tools', url: 'https://console.anthropic.com', status: 'Connected' },
+              { label: 'OpenAI API Key', key: 'OPENAI_API_KEY', desc: 'Powers ALL AI tools', url: 'https://platform.openai.com/api-keys', status: 'Connected' },
               { label: 'PayPal Client ID', key: 'PAYPAL_CLIENT_ID', desc: 'PayPal payment processing', url: 'https://developer.paypal.com', status: 'Connected' },
               { label: 'PayPal Secret', key: 'PAYPAL_SECRET', desc: 'PayPal server-side auth', url: 'https://developer.paypal.com', status: 'Connected' },
               { label: 'NOWPayments API Key', key: 'NOWPAYMENTS_API_KEY', desc: 'Crypto payment processing', url: 'https://nowpayments.io', status: 'Check Vercel' },

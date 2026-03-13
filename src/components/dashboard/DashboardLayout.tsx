@@ -156,7 +156,7 @@ export default function DashboardLayout({ children, user, onLogout }: { children
             {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
         </div>
-        <main className="flex-1 p-5 lg:p-7">{children}</main>
+        <main className="flex-1 p-4 lg:p-7">{children}</main>
       </div>
     </div>
   )
