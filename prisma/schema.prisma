@@ -130,6 +130,35 @@ model Analytics {
   @@map("analytics")
 }
 
+model ScamSignal {
+  id          String   @id @default(cuid())
+  source      String                          // openphish | phishtank | abusech | manual
+  title       String
+  description String?
+  url         String?
+  platform    String?                         // WhatsApp | Instagram | Email | SMS | etc
+  region      String   @default("Global")
+  rawData     String?                         // JSON string of raw feed data
+  hash        String?  @unique               // dedup hash of url/title
+  createdAt   DateTime @default(now())
+
+  @@map("scam_signals")
+  @@index([source])
+  @@index([createdAt])
+}
+
+model SecurityAlert {
+  id          String   @id @default(cuid())
+  date        String                          // YYYY-MM-DD key for daily cache
+  alerts      String                          // JSON array of alert objects
+  tip         String?
+  signalCount Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@map("security_alerts")
+  @@index([date])
+}
+
 model Template {
   id          String   @id @default(cuid())
   userId      String?

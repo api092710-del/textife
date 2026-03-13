@@ -50,3 +50,19 @@ export class ApiError extends Error {
     this.status = status
   }
 }
+
+// ─── getUserFromRequest: fetch full user from DB via JWT ───────────────────
+import { prisma } from './prisma'
+
+export async function getUserFromRequest(req: NextRequest) {
+  try {
+    const auth = getAuth(req)
+    if (!auth) return null
+    const user = await prisma.user.findUnique({
+      where: { id: auth.userId },
+      select: { id: true, fullName: true, email: true, plan: true, role: true, isBanned: true, createdAt: true },
+    })
+    if (!user || user.isBanned) return null
+    return user
+  } catch { return null }
+}
