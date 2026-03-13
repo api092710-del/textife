@@ -11,11 +11,11 @@ export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
 export async function GET(req: NextRequest) {
-  const cronSecret = process.env.CRON_SECRET
+  // Verify secret
   const authHeader = req.headers.get('authorization')
-  const urlSecret = req.nextUrl.searchParams.get('secret') // ✅ read from ?secret=
+  const cronSecret = process.env.CRON_SECRET
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}` && urlSecret !== cronSecret) {
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     results.ingestion = await runIngestion()
     console.log('[Cron] Ingestion complete:', results.ingestion)
 
-    // Step 2: Generate fresh AI alerts
+    // Step 2: Generate fresh AI alerts (force refresh)
     console.log('[Cron] Generating AI alerts...')
     const payload = await generateAndCacheAlerts(true)
     results.alerts = {
@@ -47,14 +47,11 @@ export async function GET(req: NextRequest) {
     })
   } catch (e: any) {
     console.error('[Cron] Error:', e.message)
-    return NextResponse.json(
-      {
-        ok: false,
-        error: e.message,
-        results,
-        duration: `${Date.now() - startTime}ms`,
-      },
-      { status: 500 }
-    )
+    return NextResponse.json({
+      ok: false,
+      error: e.message,
+      results,
+      duration: `${Date.now() - startTime}ms`,
+    }, { status: 500 })
   }
 }

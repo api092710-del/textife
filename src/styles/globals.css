@@ -219,3 +219,14 @@
   .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
   .font-sans { font-family: 'Inter', sans-serif; }
 }
+
+/* === SCROLLBAR HIDE === */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* === DARK MODE CARD === */
+.dark .card { @apply bg-gray-900 border-gray-800; }
+.dark .card:hover { @apply border-gray-700; }
+
+/* === CONTENT PAGE HELPERS === */
+.dark .bg-gray-50 { @apply bg-gray-800/50; }
