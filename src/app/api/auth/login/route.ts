@@ -2,26 +2,32 @@ import { NextRequest } from 'next/server'
 import { signToken } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
-  const { identifier } = await req.json()
+  const { email, password } = await req.json()
 
-  const user = {
-    id: 'user_123',
-    fullName: 'Demo User',
-    username: 'demo',
-    email: identifier,
-    role: 'USER',
-    plan: 'FREE',
+  // TEMP LOGIN (single user)
+  if (email !== 'demo@textife.com' || password !== '123456') {
+    return Response.json(
+      { error: 'Invalid credentials' },
+      { status: 401 }
+    )
   }
 
   const token = signToken({
-    userId: user.id,
-    email: user.email,
-    role: user.role,
-    plan: user.plan,
+    userId: 'user_1',
+    email,
+    role: 'USER',
+    plan: 'FREE',
   })
 
   return Response.json({
     token,
-    user,
+    user: {
+      id: 'user_1',
+      fullName: 'Demo User',
+      username: 'demo',
+      email,
+      role: 'USER',
+      plan: 'FREE',
+    },
   })
 }
