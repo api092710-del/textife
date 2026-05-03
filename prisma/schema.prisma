@@ -9,7 +9,7 @@ datasource db {
 }
 
 model users {
-  id              String   @id @db.Uuid
+  id              String   @id @default(uuid()) @db.Uuid
   fullName        String
   username        String   @unique
   email           String   @unique
@@ -21,7 +21,7 @@ model users {
   isActive        Boolean  @default(true)
   isBanned        Boolean  @default(false)
   createdAt       DateTime @default(now())
-  updatedAt       DateTime
+  updatedAt       DateTime @updatedAt
 
   analytics       analytics[]
   bot_instances   bot_instances[]
@@ -31,7 +31,7 @@ model users {
 }
 
 model analytics {
-  id              String   @id
+  id              String   @id @default(uuid())
   user_id         String   @db.Uuid
   date            DateTime @default(now())
   messagesHandled Int      @default(0)
@@ -43,7 +43,7 @@ model analytics {
 }
 
 model bot_instances {
-  id            String   @id
+  id            String   @id @default(uuid())
   user_id       String   @db.Uuid
   name          String
   phoneNumber   String?
@@ -52,24 +52,24 @@ model bot_instances {
   totalReplies  Int      @default(0)
   leadsCaptures Int      @default(0)
   createdAt     DateTime @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime @updatedAt
 
   users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model chat_sessions {
-  id        String   @id
+  id        String   @id @default(uuid())
   user_id   String   @db.Uuid
   title     String?
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
 
   users         users           @relation(fields: [user_id], references: [id], onDelete: Cascade)
   chat_messages chat_messages[]
 }
 
 model chat_messages {
-  id        String   @id
+  id        String   @id @default(uuid())
   sessionId String
   role      String
   content   String
@@ -80,7 +80,7 @@ model chat_messages {
 }
 
 model payments {
-  id         String   @id
+  id         String   @id @default(uuid())
   user_id    String   @db.Uuid
   provider   String
   externalId String?
@@ -90,13 +90,13 @@ model payments {
   plan       String
   metadata   String?
   createdAt  DateTime @default(now())
-  updatedAt  DateTime
+  updatedAt  DateTime @updatedAt
 
   users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model subscriptions {
-  id         String   @id
+  id         String   @id @default(uuid())
   user_id    String   @db.Uuid
   plan       String
   status     String   @default("ACTIVE")
@@ -107,13 +107,13 @@ model subscriptions {
   startDate  DateTime @default(now())
   endDate    DateTime?
   createdAt  DateTime @default(now())
-  updatedAt  DateTime
+  updatedAt  DateTime @updatedAt
 
   users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model templates {
-  id          String   @id
+  id          String   @id @default(uuid())
   user_id     String?  @db.Uuid
   title       String
   description String?
@@ -122,11 +122,11 @@ model templates {
   isPublic    Boolean  @default(false)
   usageCount  Int      @default(0)
   createdAt   DateTime @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime @updatedAt
 }
 
 model scam_signals {
-  id          String   @id
+  id          String   @id @default(uuid())
   source      String
   title       String
   description String?
@@ -139,7 +139,7 @@ model scam_signals {
 }
 
 model security_alerts {
-  id          String   @id
+  id          String   @id @default(uuid())
   date        String
   alerts      String
   tip         String?
