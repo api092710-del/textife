@@ -6,17 +6,30 @@ import { ok, handleError } from '@/lib/response'
 export async function GET(req: NextRequest) {
   try {
     const auth = requireAuth(req)
-    
-    // ADD THIS: Set RLS context with the user ID from the token
-    await prisma.$executeRaw`SELECT set_config('app.user_id', ${auth.userId}, TRUE)`;
-    
-    // Now this query will work with RLS
-    const user = await prisma.user.findUnique({
+
+    // (optional RLS context if you use it)
+    await prisma.$executeRaw`
+      SELECT set_config('app.user_id', ${auth.userId}, TRUE)
+    `
+
+    const user = await prisma.users.findUnique({
       where: { id: auth.userId },
-      select: { id: true, fullName: true, username: true, email: true, role: true, plan: true, createdAt: true, isBanned: true },
+      select: {
+        id: true,
+        fullName: true,
+        username: true,
+        email: true,
+        role: true,
+        plan: true,
+        createdAt: true,
+        isBanned: true,
+      },
     })
-    
-    if (!user || user.isBanned) throw new Error('User not found')
+
+    if (!user || user.isBanned) {
+      throw new Error('User not found or banned')
+    }
+
     return ok({ user })
   } catch (e) {
     return handleError(e)
