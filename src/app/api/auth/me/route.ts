@@ -7,11 +7,6 @@ export async function GET(req: NextRequest) {
   try {
     const auth = requireAuth(req)
 
-    // (optional RLS context if you use it)
-    await prisma.$executeRaw`
-      SELECT set_config('app.user_id', ${auth.userId}, TRUE)
-    `
-
     const user = await prisma.users.findUnique({
       where: { id: auth.userId },
       select: {
