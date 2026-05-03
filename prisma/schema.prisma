@@ -9,7 +9,7 @@ datasource db {
 }
 
 model users {
-  id              String   @id @default(uuid()) @db.Uuid
+  id              String   @id @default(uuid())
   fullName        String
   username        String   @unique
   email           String   @unique
@@ -32,7 +32,7 @@ model users {
 
 model analytics {
   id              String   @id @default(uuid())
-  user_id         String   @db.Uuid
+  user_id         String
   date            DateTime @default(now())
   messagesHandled Int      @default(0)
   leadsCaptures   Int      @default(0)
@@ -44,7 +44,7 @@ model analytics {
 
 model bot_instances {
   id            String   @id @default(uuid())
-  user_id       String   @db.Uuid
+  user_id       String
   name          String
   phoneNumber   String?
   status        String   @default("INACTIVE")
@@ -59,7 +59,7 @@ model bot_instances {
 
 model chat_sessions {
   id        String   @id @default(uuid())
-  user_id   String   @db.Uuid
+  user_id   String
   title     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -81,7 +81,7 @@ model chat_messages {
 
 model payments {
   id         String   @id @default(uuid())
-  user_id    String   @db.Uuid
+  user_id    String
   provider   String
   externalId String?
   amount     Float
@@ -97,7 +97,7 @@ model payments {
 
 model subscriptions {
   id         String   @id @default(uuid())
-  user_id    String   @db.Uuid
+  user_id    String
   plan       String
   status     String   @default("ACTIVE")
   provider   String
@@ -114,7 +114,7 @@ model subscriptions {
 
 model templates {
   id          String   @id @default(uuid())
-  user_id     String?  @db.Uuid
+  user_id     String?
   title       String
   description String?
   category    String
