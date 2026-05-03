@@ -8,22 +8,43 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id              String   @id @db.Uuid
+  fullName        String
+  username        String   @unique
+  email           String   @unique
+  dateOfBirth     String?
+  password        String
+  role            String   @default("USER")
+  plan            String   @default("FREE")
+  isEmailVerified Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  isBanned        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime
+
+  analytics       analytics[]
+  bot_instances   bot_instances[]
+  chat_sessions   chat_sessions[]
+  payments        payments[]
+  subscriptions   subscriptions[]
+}
+
 model analytics {
   id              String   @id
-  userId          String
+  user_id         String   @db.Uuid
   date            DateTime @default(now())
   messagesHandled Int      @default(0)
   leadsCaptures   Int      @default(0)
   revenueEst      Float    @default(0)
   apiCalls        Int      @default(0)
-  users           users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model bot_instances {
   id            String   @id
-  userId        String
+  user_id       String   @db.Uuid
   name          String
   phoneNumber   String?
   status        String   @default("INACTIVE")
@@ -32,35 +53,35 @@ model bot_instances {
   leadsCaptures Int      @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime
-  users         users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model chat_sessions {
+  id        String   @id
+  user_id   String   @db.Uuid
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  users         users           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  chat_messages chat_messages[]
+}
+
 model chat_messages {
-  id            String        @id
-  sessionId     String
-  role          String
-  content       String
-  tokens        Int?
-  createdAt     DateTime      @default(now())
+  id        String   @id
+  sessionId String
+  role      String
+  content   String
+  tokens    Int?
+  createdAt DateTime @default(now())
+
   chat_sessions chat_sessions @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model chat_sessions {
-  id            String          @id
-  userId        String
-  title         String?
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime
-  chat_messages chat_messages[]
-  users         users           @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model payments {
   id         String   @id
-  userId     String
+  user_id    String   @db.Uuid
   provider   String
   externalId String?
   amount     Float
@@ -70,10 +91,40 @@ model payments {
   metadata   String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime
-  users      users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model subscriptions {
+  id         String   @id
+  user_id    String   @db.Uuid
+  plan       String
+  status     String   @default("ACTIVE")
+  provider   String
+  externalId String?
+  amount     Float
+  currency   String   @default("USD")
+  startDate  DateTime @default(now())
+  endDate    DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+
+  users users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model templates {
+  id          String   @id
+  user_id     String?  @db.Uuid
+  title       String
+  description String?
+  category    String
+  content     String
+  isPublic    Boolean  @default(false)
+  usageCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+}
+
 model scam_signals {
   id          String   @id
   source      String
@@ -85,12 +136,8 @@ model scam_signals {
   rawData     String?
   hash        String?  @unique
   createdAt   DateTime @default(now())
-
-  @@index([createdAt])
-  @@index([source])
 }
 
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model security_alerts {
   id          String   @id
   date        String
@@ -98,59 +145,4 @@ model security_alerts {
   tip         String?
   signalCount Int      @default(0)
   createdAt   DateTime @default(now())
-
-  @@index([date])
-}
-
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model subscriptions {
-  id         String    @id
-  userId     String
-  plan       String
-  status     String    @default("ACTIVE")
-  provider   String
-  externalId String?
-  amount     Float
-  currency   String    @default("USD")
-  startDate  DateTime  @default(now())
-  endDate    DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime
-  users      users     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model templates {
-  id          String   @id
-  userId      String?
-  title       String
-  description String?
-  category    String
-  content     String
-  isPublic    Boolean  @default(false)
-  usageCount  Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime
-}
-
-/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-model users {
-  id              String          @id
-  fullName        String
-  username        String          @unique
-  email           String          @unique
-  dateOfBirth     String?
-  password        String
-  role            String          @default("USER")
-  plan            String          @default("FREE")
-  isEmailVerified Boolean         @default(true)
-  isActive        Boolean         @default(true)
-  isBanned        Boolean         @default(false)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime
-  analytics       analytics[]
-  bot_instances   bot_instances[]
-  chat_sessions   chat_sessions[]
-  payments        payments[]
-  subscriptions   subscriptions[]
 }
