@@ -1,32 +1,26 @@
 import { NextRequest } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
-import { ok, handleError } from '@/lib/response'
 
 export async function GET(req: NextRequest) {
   try {
-    const auth = requireAuth(req)
+    const user = requireAuth(req)
 
-    const user = await prisma.users.findUnique({
-      where: { id: auth.userId },
-      select: {
-        id: true,
-        fullName: true,
-        username: true,
-        email: true,
-        role: true,
-        plan: true,
-        createdAt: true,
-        isBanned: true,
+    return Response.json({
+      user: {
+        id: user.userId,
+        fullName: 'Demo User',
+        username: 'demo',
+        email: user.email,
+        role: user.role,
+        plan: user.plan,
+        createdAt: new Date().toISOString(),
+        isBanned: false,
       },
     })
-
-    if (!user || user.isBanned) {
-      throw new Error('User not found or banned')
-    }
-
-    return ok({ user })
-  } catch (e) {
-    return handleError(e)
+  } catch {
+    return Response.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    )
   }
 }
