@@ -1,8 +1,5 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-import { prisma } from '@/lib/prisma'
-import { hashPassword, signToken } from '@/lib/auth'
-import { ok, err, handleError } from '@/lib/response'
 
 const schema = z.object({
   fullName: z.string().min(2),
@@ -21,40 +18,29 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const data = schema.parse(body)
 
-    const emailExists = await prisma.users.findUnique({
-      where: { email: data.email.toLowerCase() }
-    })
+    // 🔥 FAKE USER (NO DB)
+    const user = {
+      id: 'demo-user-' + Date.now(),
+      fullName: data.fullName,
+      username: data.username.toLowerCase(),
+      email: data.email.toLowerCase(),
+      role: 'USER',
+      plan: 'FREE',
+      createdAt: new Date().toISOString(),
+    }
 
-    const usernameExists = await prisma.users.findUnique({
-      where: { username: data.username.toLowerCase() }
-    })
+    // 🔥 FAKE TOKEN
+    const token = 'fake-token-' + Date.now()
 
-    if (emailExists) return err('Email already registered', 409)
-    if (usernameExists) return err('Username already taken', 409)
+    return Response.json({
+      token,
+      user,
+    }, { status: 201 })
 
-    const user = await prisma.users.create({
-      data: {
-        fullName: data.fullName.trim(),
-        username: data.username.toLowerCase(),
-        email: data.email.toLowerCase(),
-        dateOfBirth: data.dateOfBirth || null,
-        password: await hashPassword(data.password),
-        role: 'USER',
-        plan: 'FREE',
-      }
-    })
-
-    const token = signToken({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-      plan: user.plan,
-    })
-
-    return ok({ token, user }, 201)
-
-  } catch (e) {
-    if (e instanceof z.ZodError) return err(e.errors[0].message, 422)
-    return handleError(e)
+  } catch (e: any) {
+    return Response.json(
+      { error: e.message || 'Registration failed' },
+      { status: 400 }
+    )
   }
 }
